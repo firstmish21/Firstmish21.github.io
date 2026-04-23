@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAZZBEAR - צור קשר</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body, html { height: 100%; margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #0b0b0b; color: #ddd; }
+    .bg-fnaf { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: url('fnaf-bg.jpg') no-repeat center center/cover; filter: brightness(0.25); z-index: -1; }
+    main { padding-top: 100px; }
+    .form-card { background: rgba(25, 25, 25, 0.9); border-radius: 12px; padding: 30px; color: #eee;
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.3); }
+    .hero-text { text-shadow: 0 0 15px #ff0000; }
+    label { color: #ffb300; }
+    footer { background-color: rgba(0, 0, 0, 0.7); color: #ffb300; padding: 10px 0; }
+    .form-control, .form-select { background-color: #111; color: #ddd; border: 1px solid #333; }
+    .form-control:focus, .form-select:focus { border-color: #ff0000; box-shadow: 0 0 6px #ff0000; }
+    .form-control.is-invalid, .form-select.is-invalid { border-color: #dc3545; }
+    .form-control.is-invalid:focus, .form-select.is-invalid:focus { border-color: #dc3545; box-shadow: 0 0 6px #dc3545; }
+    .invalid-feedback { display: block; color: #dc3545; font-size: 14px; margin-top: 5px; }
+    .alert { margin-top: 15px; }
+    .btn-danger:disabled { opacity: 0.6; }
+    .user-section { background: rgba(50, 50, 50, 0.8); border-radius: 8px; padding: 15px; margin-bottom: 20px;
+      border-left: 4px solid #ff0000; }
+    .user-info { color: #ffb300; font-size: 14px; }
+    .btn-logout { background: rgba(255, 0, 0, 0.3); border: 1px solid #ff0000; color: #ff0000;
+      font-size: 12px; padding: 5px 10px; }
+    .btn-logout:hover { background: #ff0000; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="bg-fnaf"></div>
+
+  <!-- נוויגציה -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFWHp2AcnC8fUUINvl9Kfg-VShKnbWJ2zl2g&s"
+             alt="Fazzbear Logo" class="ms-2" style="height:34px" />
+        FAZZBEAR פרויקט
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- כל הלינקים המוגנים -->
+          <li class="nav-item"><a class="nav-link" href="index.html" data-protected="true">דף הבית</a></li>
+          <li class="nav-item"><a class="nav-link" href="robots.html" data-protected="true">הרובוטים</a></li>
+          <li class="nav-item"><a class="nav-link" href="security.html" data-protected="true">חדר ביטחון</a></li>
+          <!-- הדף הנוכחי לא מוגן (כבר כאן) -->
+          <li class="nav-item"><a class="nav-link active" href="contact.html">צור קשר</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- קטע התחברות/הרשמה -->
+    <div id="authSection" class="col-md-8 mx-auto mb-4">
+      <div class="form-card">
+        <h2 class="text-center mb-4 hero-text">🔐 הרשמה / התחברות</h2>
+
+        <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">התחברות</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup" type="button">הרשמה</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="authTabContent">
+          <!-- התחברות -->
+          <div class="tab-pane fade show active" id="login" role="tabpanel">
+            <form id="loginForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">אימייל</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="example@email.com" required>
+                <div class="invalid-feedback">אנא הזן כתובת אימייל תקינה.</div>
+              </div>
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">סיסמה</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="הקלד סיסמה" required>
+                <div class="invalid-feedback">אנא הזן סיסמה.</div>
+              </div>
+              <button type="submit" class="btn btn-danger w-100" id="loginBtn">התחבר</button>
+            </form>
+          </div>
+
+          <!-- הרשמה -->
+          <div class="tab-pane fade" id="signup" role="tabpanel">
+            <form id="signupForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="signupName" class="form-label">שם מלא</label>
+                <input type="text" id="signupName" class="form-control" placeholder="הקלד את שמך" required>
+                <div class="invalid-feedback">אנא הזן שם מלא.</div>
+              </div>
+              <div class="mb-3">
+                <label for="signupEmail" class="form-label">אימייל</label>
+                <input type="email" id="signupEmail" class="form-control" placeholder="example@email.com" required>
+                <div class="invalid-feedback">אנא הזן כתובת אימייל תקינה.</div>
+              </div>
+              <div class="mb-3">
+                <label for="signupPassword" class="form-label">סיסמה (לפחות 6 תווים)</label>
+                <input type="password" id="signupPassword" class="form-control" placeholder="הקלד סיסמה" required>
+                <div class="invalid-feedback">אנא הזן סיסמה של 6 תווים לפחות.</div>
+              </div>
+              <button type="submit" class="btn btn-danger w-100" id="signupBtn">הרשם</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="authAlertContainer"></div>
+      </div>
+    </div>
+
+    <!-- קטע משתמש מחובר -->
+    <div id="userLoggedIn" class="col-md-8 mx-auto mb-4" style="display: none;">
+      <div class="user-section">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="m-0" style="color: #ffb300;">👤 משתמש מחובר</h5>
+            <p class="user-info m-0 mt-2">
+              <strong>שם:</strong> <span id="userDisplayName">-</span><br>
+              <strong>אימייל:</strong> <span id="userDisplayEmail">-</span><br>
+              <strong>תאריך הרשמה:</strong> <span id="userCreatedDate">-</span>
+            </p>
+          </div>
+          <button type="button" class="btn btn-logout" id="logoutBtn">התנתק</button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-center mb-4 hero-text">📧 צור קשר עם הצוות</h1>
+    <div class="col-md-8 mx-auto form-card">
+      <form id="contactForm" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="name" class="form-label">שם מלא</label>
+          <input type="text" id="name" class="form-control" placeholder="הקלד את שמך" required>
+          <div class="invalid-feedback">אנא הזן שם מלא.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">אימייל</label>
+          <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
+          <div class="invalid-feedback">אנא הזן כתובת אימייל תקינה.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="topic" class="form-label">נושא הפנייה</label>
+          <input type="text" id="topic" class="form-control" placeholder="על מה תרצה לשאול?">
+        </div>
+
+        <div class="mb-3">
+          <label for="message" class="form-label">תוכן ההודעה</label>
+          <textarea id="message" rows="4" class="form-control" placeholder="כתוב כאן את ההודעה שלך..." required></textarea>
+          <div class="invalid-feedback">אנא הזן את תוכן ההודעה.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">אפשרויות יצירת קשר</label>
+          <div class="form-check">
+            <input type="checkbox" id="contactEmail" class="form-check-input">
+            <label class="form-check-label" for="contactEmail">באמצעות אימייל</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="contactPhone" class="form-check-input">
+            <label class="form-check-label" for="contactPhone">באמצעות טלפון</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">בחר קטגוריה</label>
+          <select id="category" class="form-select">
+            <option value="">בחר נושא...</option>
+            <option value="technical">תמיכה טכנית</option>
+            <option value="feedback">פידבק</option>
+            <option value="collaboration">שיתוף פעולה</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100" id="submitBtn">שלח הודעה</button>
+      </form>
+      <div id="alertContainer"></div>
+    </div>
+  </main>
+
+  <footer class="text-center mt-5">
+    © <span data-year></span> FAZZBEAR ENTERTAINMENT - כל הזכויות שמורות
+  </footer>
+
+  <!-- Firebase SDK (Modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      updateProfile,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+  apiKey: "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
+  authDomain: "project-shalty.firebaseapp.com",
+  databaseURL: "https://project-shalty-default-rtdb.firebaseio.com",
+  projectId: "project-shalty",
+  storageBucket: "project-shalty.firebasestorage.app",
+  messagingSenderId: "984471122116",
+  appId: "1:984471122116:web:8f958b467378fd19475991"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    console.log('✅ Firebase נטען בהצלחה!');
+    console.log('📊 Database URL:', firebaseConfig.databaseURL);
+
+    // Elements
+    const authSection = document.getElementById('authSection');
+    const userLoggedIn = document.getElementById('userLoggedIn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const contactForm = document.getElementById('contactForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authAlertContainer = document.getElementById('authAlertContainer');
+    const alertContainer = document.getElementById('alertContainer');
+
+    // ====================
+    // פונקציות עזר לאימות
+    // ====================
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function isStrongPassword(password) {
+      return password.length >= 6;
+    }
+
+    // ====================
+    // התחברות - עם ולידציה
+    // ====================
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      let hasError = false;
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+
+      const email = emailInput.value.trim();
+      const password = passInput.value.trim();
+
+      if (!email || !isValidEmail(email)) {
+        emailInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        emailInput.classList.remove('is-invalid');
+      }
+
+      if (!password) {
+        passInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        passInput.classList.remove('is-invalid');
+      }
+
+      if (hasError) {
+        loginForm.classList.add('was-validated');
+        showAuthAlert('אנא מלא אימייל וסיסמה תקינים.', 'danger');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'מחבר...';
+
+      try {
+        console.log('🔄 מחבר משתמש:', email);
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('✅ התחברות הצליחה');
+        showAuthAlert('התחברת בהצלחה! 🎉', 'success');
+        loginForm.reset();
+        loginForm.classList.remove('was-validated');
+      } catch (error) {
+        console.error('❌ שגיאת התחברות:', error.code, error.message);
+        let errorMessage = 'שגיאה בהתחברות';
+
+        if (error.code === 'auth/user-not-found') {
+          errorMessage = 'המשתמש לא קיים';
+        } else if (error.code === 'auth/wrong-password') {
+          errorMessage = 'סיסמה שגויה';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'אימייל לא תקין';
+        }
+
+        showAuthAlert(`שגיאה: ${errorMessage}`, 'danger');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'התחבר';
+      }
+    });
+
+    // ====================
+    // הרשמה - עם ולידציה
+    // ====================
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('signupName');
+      const emailInput = document.getElementById('signupEmail');
+      const passInput = document.getElementById('signupPassword');
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passInput.value.trim();
+
+      let hasError = false;
+
+      if (!name) {
+        nameInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        nameInput.classList.remove('is-invalid');
+      }
+
+      if (!email || !isValidEmail(email)) {
+        emailInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        emailInput.classList.remove('is-invalid');
+      }
+
+      if (!isStrongPassword(password)) {
+        passInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        passInput.classList.remove('is-invalid');
+      }
+
+      if (hasError) {
+        signupForm.classList.add('was-validated');
+        showAuthAlert('אנא ודא שכל השדות תקינים והסיסמה באורך 6 תווים לפחות.', 'danger');
+        return;
+      }
+
+      signupBtn.disabled = true;
+      signupBtn.textContent = 'משתתף...';
+
+      try {
+        console.log('🔄 יוצר משתמש חדש:', email);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log('✅ משתמש נוצר בAuth:', user.uid);
+
+        await updateProfile(user, { displayName: name });
+        console.log('✅ שם המשתמש עודכן');
+
+        const userData = {
+          name: name,
+          email: email,
+          createdAt: new Date().toISOString(),
+          createdDate: new Date().toLocaleDateString('he-IL'),
+          uid: user.uid
+        };
+
+        console.log('📝 שומר לDatabase:', userData);
+        await set(ref(database, 'users/' + user.uid), userData);
+        console.log('✅ נתונים נשמרו בDatabase בהצלחה');
+
+        showAuthAlert('הרשמה הצליחה! 🎉 אתה יכול להתחבר עכשיו', 'success');
+        signupForm.reset();
+        signupForm.classList.remove('was-validated');
+      } catch (error) {
+        console.error('❌ שגיאת הרשמה:', error.code, error.message);
+
+        let errorMessage = 'שגיאה בהרשמה';
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'האימייל כבר בשימוש';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'אימייל לא תקין';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'הסיסמה חלשה מדי';
+        } else if (error.code === 'auth/operation-not-allowed') {
+          errorMessage = 'הרשמה אינה מופעלת ברגע זה';
+        }
+
+        showAuthAlert(`שגיאה: ${errorMessage}`, 'danger');
+      } finally {
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'הרשם';
+      }
+    });
+
+    // ====================
+    // התנתקות
+    // ====================
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        showAlert('התנתקת בהצלחה!', 'info');
+      } catch (error) {
+        showAlert('שגיאה בהתנתקות', 'danger');
+      }
+    });
+
+    // ====================
+    // Guard + מצב משתמש מחובר
+    // ====================
+    const protectedLinks = document.querySelectorAll('a[data-protected="true"]');
+    let isAuthenticated = false;
+
+    // חסימת ניווט ברירת מחדל מה‑navbar
+    protectedLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        if (!isAuthenticated) {
+          e.preventDefault();
+          showAlert('עליך להתחבר לפני מעבר לדפים אחרים.', 'danger');
+        }
+      });
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('👤 משתמש מחובר:', user.email);
+        isAuthenticated = true;
+        authSection.style.display = 'none';
+        userLoggedIn.style.display = 'block';
+
+        document.getElementById('userDisplayName').textContent = user.displayName || user.email;
+        document.getElementById('userDisplayEmail').textContent = user.email;
+        document.getElementById('userCreatedDate').textContent =
+          new Date(user.metadata.creationTime).toLocaleDateString('he-IL');
+
+        document.getElementById('name').value = user.displayName || '';
+        document.getElementById('email').value = user.email;
+        document.getElementById('name').disabled = true;
+        document.getElementById('email').disabled = true;
+      } else {
+        console.log('👤 משתמש לא מחובר');
+        isAuthenticated = false;
+        authSection.style.display = 'block';
+        userLoggedIn.style.display = 'none';
+        document.getElementById('name').disabled = false;
+        document.getElementById('email').disabled = false;
+      }
+    });
+
+    // ====================
+    // שליחת טופס צור קשר
+    // ====================
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!contactForm.checkValidity()) {
+        e.stopPropagation();
+        contactForm.classList.add('was-validated');
+
+        const inputs = contactForm.querySelectorAll('[required]');
+        inputs.forEach(input => {
+          if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+          }
+        });
+
+        showAlert('❌ אנא מלא את כל שדות החובה בצורה תקינה.', 'danger');
+        return;
+      }
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const topic = document.getElementById('topic').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const contactEmail = document.getElementById('contactEmail').checked;
+      const contactPhone = document.getElementById('contactPhone').checked;
+      const category = document.getElementById('category').value;
+
+      if (!name || !email || !message) {
+        showAlert('❌ שם, אימייל והודעה הם חובה.', 'danger');
+        return;
+      }
+
+      if (!contactEmail && !contactPhone) {
+        showAlert('❌ אנא בחר לפחות אפשרות יצירת קשר אחת.', 'danger');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'שולח...';
+
+      try {
+        const contactData = {
+          name: name,
+          email: email,
+          topic: topic || 'לא צוין',
+          message: message,
+          contactEmail: contactEmail,
+          contactPhone: contactPhone,
+          category: category || 'לא צוין',
+          timestamp: new Date().toISOString(),
+          date: new Date().toLocaleDateString('he-IL'),
+          time: new Date().toLocaleTimeString('he-IL'),
+          userId: auth.currentUser ? auth.currentUser.uid : 'anonymous'
+        };
+
+        console.log('📤 שולח הודעת קשר:', contactData);
+        const newContactRef = ref(database, 'contacts/' + Date.now());
+        await set(newContactRef, contactData);
+
+        showAlert('✅ ההודעה נשלחה בהצלחה! 🎉', 'success');
+        contactForm.reset();
+        contactForm.classList.remove('was-validated');
+
+        const allInputs = contactForm.querySelectorAll('.form-control, .form-select, .form-check-input');
+        allInputs.forEach(input => input.classList.remove('is-invalid'));
+
+        console.log('✅ הודעה נשמרה בהצלחה');
+      } catch (error) {
+        console.error('❌ שגיאה בשליחה:', error);
+        showAlert('❌ שגיאה בשליחת ההודעה. אנא נסה שוב.', 'danger');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'שלח הודעה';
+      }
+    });
+
+    // ====================
+    // הצגת הודעות
+    // ====================
+    function showAuthAlert(message, type) {
+      authAlertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+    }
+
+    function showAlert(message, type) {
+      alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+    }
+
+    // עדכון השנה בפוטר
+    document.querySelectorAll('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
