@@ -1,3 +1,6 @@
+Fazbear final · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -128,7 +131,7 @@
     import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
  
     // --- הגדרות אישיות (חובה למלא!) ---
-    const GEMINI_API_KEY = "AIzaSyA6tG-62VaX_7AYZS2LBSEtidwHd2bGQbg"; 
+    const ANTHROPIC_API_KEY = "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"; 
     
     const firebaseConfig = {
         apiKey: "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
@@ -149,33 +152,35 @@
         const analysisContent = document.getElementById('analysisContent');
         analysisContent.innerHTML = "מנתח נתונים... <br>[SCANNING FREQUENCIES]";
         
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
- 
-        const data = {
-            systemInstruction: {
-                parts: [{
-                    text: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
+        try {
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': ANTHROPIC_API_KEY,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: "claude-haiku-4-5-20251001",
+                    max_tokens: 1000,
+                    system: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
                            ענה בעברית בטון קריפי, טכנולוגי ומסתורי. 
                            תשלב מדי פעם מילים כמו [ERROR], [STATIC] או [MOVEMENT DETECTED]. 
-                           אל תגיד שאתה AI, אתה חלק מהמערכת של המקום.`
-                }]
-            },
-            contents: [{
-                parts: [{
-                    text: userText
-                }]
-            }]
-        };
- 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                           אל תגיד שאתה AI, אתה חלק מהמערכת של המקום.`,
+                    messages: [{ role: "user", content: userText }]
+                })
             });
  
             const result = await response.json();
-            const aiReply = result.candidates[0].content.parts[0].text;
+ 
+            if (!response.ok || !result.content || result.content.length === 0) {
+                const reason = result?.error?.message || `HTTP ${response.status}`;
+                analysisContent.textContent = `[SYSTEM OVERLOAD]: ${reason}`;
+                return;
+            }
+ 
+            const aiReply = result.content[0].text;
  
             analysisContent.textContent = aiReply;
             speakText(aiReply);
