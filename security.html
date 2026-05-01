@@ -132,12 +132,12 @@
     
     const firebaseConfig = {
         apiKey: "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
-  authDomain: "project-shalty.firebaseapp.com",
-  databaseURL: "https://project-shalty-default-rtdb.firebaseio.com",
-  projectId: "project-shalty",
-  storageBucket: "project-shalty.firebasestorage.app",
-  messagingSenderId: "984471122116",
-  appId: "1:984471122116:web:8f958b467378fd19475991"
+        authDomain: "project-shalty.firebaseapp.com",
+        databaseURL: "https://project-shalty-default-rtdb.firebaseio.com",
+        projectId: "project-shalty",
+        storageBucket: "project-shalty.firebasestorage.app",
+        messagingSenderId: "984471122116",
+        appId: "1:984471122116:web:8f958b467378fd19475991"
     };
 
     // אתחול Firebase
@@ -152,13 +152,17 @@
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         const data = {
+            systemInstruction: {
+                parts: [{
+                    text: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
+                           ענה בעברית בטון קריפי, טכנולוגי ומסתורי. 
+                           תשלב מדי פעם מילים כמו [ERROR], [STATIC] או [MOVEMENT DETECTED]. 
+                           אל תגיד שאתה AI, אתה חלק מהמערכת של המקום.`
+                }]
+            },
             contents: [{
                 parts: [{
-                    text: `SYSTEM_PROMPT: אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
-                           ענה בעברית בטון קריפר, טכנולוגי ומסתורי. 
-                           תשלב מדי פעם מילים כמו [ERROR], [STATIC] או [MOVEMENT DETECTED]. 
-                           אל תגיד שאתה AI, אתה חלק מהמערכת של המקום.
-                           שאלה מהמאבטח: ${userText}`
+                    text: userText
                 }]
             }]
         };
