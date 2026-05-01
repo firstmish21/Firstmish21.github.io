@@ -19,7 +19,7 @@
             overflow: hidden;
             text-shadow: 0 0 5px #00ff41;
         }
-
+ 
         #terminal {
             width: 85%;
             max-width: 900px;
@@ -29,14 +29,14 @@
             box-shadow: inset 0 0 30px #004400, 0 0 20px #00ff41;
             position: relative;
         }
-
+ 
         h2 { 
             text-align: center; 
             letter-spacing: 8px; 
             border-bottom: 1px solid #00ff41;
             padding-bottom: 10px;
         }
-
+ 
         #analysisContent {
             height: 250px;
             overflow-y: auto;
@@ -49,12 +49,12 @@
             scrollbar-width: thin;
             scrollbar-color: #00ff41 black;
         }
-
+ 
         .input-group {
             display: flex;
             gap: 12px;
         }
-
+ 
         input {
             flex-grow: 1;
             background: #000;
@@ -64,7 +64,7 @@
             font-family: inherit;
             outline: none;
         }
-
+ 
         button {
             background: #002200;
             color: #00ff41;
@@ -74,25 +74,25 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-
+ 
         button:hover {
             background: #00ff41;
             color: #000;
         }
-
+ 
         .listening {
             animation: pulse 1s infinite;
             background: #440000 !important;
             border-color: #ff0000 !important;
             color: #ff0000 !important;
         }
-
+ 
         @keyframes pulse {
             0% { box-shadow: 0 0 0px #ff0000; }
             50% { box-shadow: 0 0 15px #ff0000; }
             100% { box-shadow: 0 0 0px #ff0000; }
         }
-
+ 
         #status-bar {
             display: flex;
             justify-content: space-between;
@@ -102,7 +102,7 @@
     </style>
 </head>
 <body>
-
+ 
 <div id="terminal">
     <div id="status-bar">
         <span>LOCAL_IP: 192.168.1.108</span>
@@ -112,7 +112,7 @@
     <h2>FAZBEAR SECURITY AI</h2>
     
     <div id="analysisContent">מערכת מוכנה... ממתין לקלט מהמאבטח. [Awaiting Input]</div>
-
+ 
     <div class="input-group">
         <input type="text" id="analysisPrompt" placeholder="הכנס פקודה למערכת..." autocomplete="off">
         <button id="analyzeBtn">בצע ניתוח</button>
@@ -121,12 +121,12 @@
     
     <div id="transcript" style="font-size: 0.8em; color: #00661a; margin-top: 10px;"></div>
 </div>
-
+ 
 <!-- טעינת Firebase מרחוק -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+ 
     // --- הגדרות אישיות (חובה למלא!) ---
     const GEMINI_API_KEY = "AIzaSyA6tG-62VaX_7AYZS2LBSEtidwHd2bGQbg"; 
     
@@ -139,18 +139,18 @@
         messagingSenderId: "984471122116",
         appId: "1:984471122116:web:8f958b467378fd19475991"
     };
-
+ 
     // אתחול Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
+ 
     // --- לוגיקה של ה-AI ---
     async function callCharacterAI(userText) {
         const analysisContent = document.getElementById('analysisContent');
         analysisContent.innerHTML = "מנתח נתונים... <br>[SCANNING FREQUENCIES]";
         
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-
+ 
         const data = {
             systemInstruction: {
                 parts: [{
@@ -166,49 +166,49 @@
                 }]
             }]
         };
-
+ 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
+ 
             const result = await response.json();
             const aiReply = result.candidates[0].content.parts[0].text;
-
+ 
             analysisContent.textContent = aiReply;
             speakText(aiReply);
-
+ 
             // שמירה ל-Firebase
             push(ref(db, 'security_logs'), {
                 timestamp: Date.now(),
                 prompt: userText,
                 response: aiReply
             });
-
+ 
         } catch (error) {
             console.error("AI Error:", error);
             analysisContent.textContent = "[CRITICAL ERROR]: הגישה לשרת נחסמה על ידי גורם לא ידוע.";
         }
     }
-
+ 
     // --- זיהוי קולי ---
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'he-IL';
-
+ 
     document.getElementById('micBtn').addEventListener('click', function() {
         recognition.start();
         this.classList.add('listening');
     });
-
+ 
     recognition.onresult = (event) => {
         const text = event.results[0][0].transcript;
         document.getElementById('transcript').textContent = "קלט קולי: " + text;
         document.getElementById('micBtn').classList.remove('listening');
         callCharacterAI(text);
     };
-
+ 
     // --- הקראת טקסט ---
     function speakText(text) {
         const speech = new SpeechSynthesisUtterance(text);
@@ -217,7 +217,7 @@
         speech.rate = 0.9;  // קצב מעט איטי
         window.speechSynthesis.speak(speech);
     }
-
+ 
     // --- כפתור שליחה ידני ---
     document.getElementById('analyzeBtn').addEventListener('click', () => {
         const val = document.getElementById('analysisPrompt').value;
@@ -226,12 +226,12 @@
             document.getElementById('analysisPrompt').value = "";
         }
     });
-
+ 
     // שעון מערכת בצד
     setInterval(() => {
         document.getElementById('clock').textContent = new Date().toLocaleTimeString();
     }, 1000);
 </script>
-
+ 
 </body>
 </html>
