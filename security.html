@@ -35,7 +35,6 @@
             margin-top: 0;
         }
 
-        /* ─── שורת מצלמות ─────────────────────────────── */
         #cameras-row {
             display: flex;
             gap: 12px;
@@ -56,7 +55,6 @@
             margin-bottom: 4px;
         }
 
-        /* וידאו של המחשב */
         #camera {
             width: 100%;
             height: 200px;
@@ -67,7 +65,6 @@
             background: #050505;
         }
 
-        /* תמונת MJPEG של ESP-CAM */
         #espCamImg {
             width: 100%;
             height: 200px;
@@ -78,7 +75,6 @@
             background: #050505;
         }
 
-        /* placeholder כשה-ESP לא מחובר */
         #espPlaceholder {
             width: 100%;
             height: 200px;
@@ -92,7 +88,6 @@
             letter-spacing: 2px;
         }
 
-        /* ─── שורת כפתורים ────────────────────────────── */
         #cam-controls {
             display: flex;
             gap: 10px;
@@ -107,7 +102,6 @@
             gap: 6px;
         }
 
-        /* שדה IP של ESP */
         #espIpInput {
             width: 100%;
             background: black;
@@ -124,7 +118,6 @@
             color: #004400;
         }
 
-        /* ─── AI וקלט ─────────────────────────────────── */
         #aiAnswer {
             height: 180px;
             overflow-y: auto;
@@ -164,10 +157,9 @@
             white-space: nowrap;
         }
 
-        button:hover  { background: #00ff41; color: black; }
+        button:hover    { background: #00ff41; color: black; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ─── סטטוס ───────────────────────────────────── */
         #statusBar {
             display: flex;
             justify-content: space-between;
@@ -175,7 +167,6 @@
             margin-bottom: 15px;
         }
 
-        /* ─── מיקרופון ────────────────────────────────── */
         #micBtn.listening {
             background: #440000;
             border-color: #ff0000;
@@ -188,7 +179,6 @@
             50%       { opacity: 0.5; }
         }
 
-        /* ─── אינדיקטור חיבור ESP ─────────────────────── */
         .dot {
             display: inline-block;
             width: 8px;
@@ -205,7 +195,6 @@
 
 <div id="terminal">
 
-    <!-- סטטוס עליון -->
     <div id="statusBar">
         <span>LOCAL_IP: 192.168.0.150</span>
         <span id="sysStatus">SYSTEM: ONLINE</span>
@@ -214,38 +203,30 @@
 
     <h2>FAZBEAR SECURITY AI</h2>
 
-    <!-- ─── שתי מצלמות זו לצד זו ─── -->
     <div id="cameras-row">
 
-        <!-- מצלמת מחשב -->
         <div class="cam-block">
             <div class="cam-label">[ CAM-01 / MAIN ENTRANCE ]</div>
             <video id="camera" autoplay muted playsinline></video>
         </div>
 
-        <!-- ESP-CAM -->
         <div class="cam-block">
             <div class="cam-label">
                 [ CAM-02 / ESP-CAM ]
                 <span id="espDot" class="dot off"></span>
             </div>
-            <!-- placeholder כשלא מחובר -->
             <div id="espPlaceholder">[ NO SIGNAL ]</div>
-            <!-- תמונת stream - מוסתרת בהתחלה -->
             <img id="espCamImg" src="" alt="ESP-CAM" style="display:none;">
         </div>
 
     </div>
 
-    <!-- ─── כפתורי מצלמות ─── -->
     <div id="cam-controls">
 
-        <!-- כפתור מצלמת מחשב -->
         <div class="cam-btn-group">
             <button id="camBtn">הפעל מצלמה</button>
         </div>
 
-        <!-- חיבור ESP-CAM: שדה IP + כפתור -->
         <div class="cam-btn-group">
             <input type="text" id="espIpInput" placeholder="192.168.x.x  (IP של ESP-CAM)">
             <button id="espBtn">חבר ESP-CAM</button>
@@ -253,10 +234,8 @@
 
     </div>
 
-    <!-- ─── תגובת AI ─── -->
     <div id="aiAnswer">מערכת מוכנה... [Awaiting Input]</div>
 
-    <!-- ─── קלט ─── -->
     <div class="input-group">
         <input type="text" id="userInput" placeholder="הכנס פקודה...">
         <button id="sendBtn">שלח</button>
@@ -271,7 +250,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ← הכנס כאן את מפתח Groq שלך (console.groq.com)
     const API_KEY = "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";
 
     const firebaseConfig = {
@@ -395,18 +373,15 @@
     });
 
     // ─── ESP-CAM (MJPEG stream) ────────────────────────────────────
-    // ESP-CAM שולח MJPEG — הדפדפן תומך בזה ישירות בתוך <img src="...">
-    // נסה פורט 81 קודם (CameraWebServer הרשמי של Espressif),
-    // אם לא עובד — נסה פורט 80 /stream
-
-    let espConnected = false;
+    let espConnected  = false;
+    let espErrorShown = false; // ← דגל — שגיאה מוצגת פעם אחת בלבד
 
     document.getElementById('espBtn').addEventListener('click', () => {
-        const ipRaw   = document.getElementById('espIpInput').value.trim();
-        const espBtn  = document.getElementById('espBtn');
-        const img     = document.getElementById('espCamImg');
+        const ipRaw       = document.getElementById('espIpInput').value.trim();
+        const espBtn      = document.getElementById('espBtn');
+        const img         = document.getElementById('espCamImg');
         const placeholder = document.getElementById('espPlaceholder');
-        const dot     = document.getElementById('espDot');
+        const dot         = document.getElementById('espDot');
 
         if (!espConnected) {
             if (!ipRaw) {
@@ -414,26 +389,26 @@
                 return;
             }
 
-            // נסה קודם פורט 81 (CameraWebServer ברירת מחדל של Espressif)
-            // אם ה-sketch שלך משדר בפורט 80 — שנה ל: `http://${ipRaw}/stream`
-            const streamUrl = `http://${ipRaw}:81/stream`;
+            espErrorShown = false; // ← איפוס דגל בכל ניסיון חיבור חדש
 
-            img.src = streamUrl;
+            img.src = `http://${ipRaw}:81/stream`;
             img.style.display = "block";
             placeholder.style.display = "none";
             dot.classList.replace('off', 'on');
             espBtn.textContent = "נתק ESP-CAM";
             espConnected = true;
 
-            // זיהוי שגיאה - אם התמונה לא נטענת תוך 5 שניות
             img.onerror = () => {
-                // ניסיון שני עם פורט 80
                 if (img.src.includes(':81')) {
+                    // ניסיון שני — פורט 80
                     img.src = `http://${ipRaw}/stream`;
                 } else {
-                    // שניהם נכשלו
+                    // שני הניסיונות נכשלו
                     disconnectEsp();
-                    alert(`לא ניתן להתחבר ל-ESP-CAM ב-${ipRaw}\nוודא שה-IP נכון והמכשיר מחובר לאותה רשת`);
+                    if (!espErrorShown) {          // ← מציג alert פעם אחת בלבד
+                        espErrorShown = true;
+                        alert(`לא ניתן להתחבר ל-ESP-CAM ב-${ipRaw}\nוודא שה-IP נכון והמכשיר מחובר לאותה רשת`);
+                    }
                 }
             };
 
@@ -470,7 +445,7 @@
             recognition.start();
         });
 
-        recognition.onstart  = () => {
+        recognition.onstart = () => {
             isListening = true;
             micBtn.classList.add('listening');
             micBtn.textContent = "⏹ עצור";
@@ -483,12 +458,12 @@
             askAI(text);
         };
 
-        recognition.onerror  = (event) => {
+        recognition.onerror = (event) => {
             voiceText.textContent = `[MIC ERROR]: ${event.error}`;
             console.error("Speech error:", event.error);
         };
 
-        recognition.onend    = () => {
+        recognition.onend = () => {
             isListening = false;
             micBtn.classList.remove('listening');
             micBtn.textContent = "🎤 מיקרופון";
