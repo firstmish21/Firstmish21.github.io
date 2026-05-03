@@ -32,6 +32,43 @@
             padding-bottom: 10px;
             margin-top: 0;
         }
+
+        /* ─── API KEY PANEL ───────────────────────────────── */
+        #apiPanel {
+            border: 1px solid #004400;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            background: #020a02;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #apiPanel label {
+            font-size: 0.8em;
+            color: #00aa33;
+            white-space: nowrap;
+        }
+        #apiKeyInput {
+            flex-grow: 1;
+            background: black;
+            border: 1px solid #006600;
+            color: #00ff41;
+            padding: 7px 10px;
+            font-family: inherit;
+            font-size: 0.85em;
+            outline: none;
+            min-width: 200px;
+        }
+        #apiKeyInput::placeholder { color: #004400; }
+        #apiStatus {
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        #apiStatus.ok  { color: #00ff41; }
+        #apiStatus.err { color: #ff4444; }
+
+        /* ─── מצלמות ──────────────────────────────────────── */
         #cameras-row {
             display: flex;
             gap: 12px;
@@ -102,7 +139,7 @@
             white-space: pre-wrap;
         }
         .input-group { display: flex; gap: 10px; }
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             flex-grow: 1;
             background: black;
             border: 1px solid #00ff41;
@@ -156,20 +193,27 @@
 <div id="terminal">
 
     <div id="statusBar">
-        <span>LOCAL_IP: 192.168.0.150</span>
         <span id="sysStatus">SYSTEM: ONLINE</span>
         <span id="clock"></span>
     </div>
 
     <h2>FAZBEAR SECURITY AI</h2>
 
-    <div id="cameras-row">
+    <!-- ─── API KEY PANEL ─── -->
+    <div id="apiPanel">
+        <label>GROQ API KEY:</label>
+        <input type="password" id="apiKeyInput" placeholder="gsk_...">
+        <button id="apiSaveBtn">שמור</button>
+        <button id="apiClearBtn">מחק</button>
+        <span id="apiStatus" class="err">[ לא מוגדר ]</span>
+    </div>
 
+    <!-- ─── מצלמות ─── -->
+    <div id="cameras-row">
         <div class="cam-block">
             <div class="cam-label">[ CAM-01 / MAIN ENTRANCE ]</div>
             <video id="camera" autoplay muted playsinline></video>
         </div>
-
         <div class="cam-block">
             <div class="cam-label">
                 [ CAM-02 / ESP-CAM — FIREBASE ]
@@ -178,7 +222,6 @@
             <div id="espPlaceholder">[ ממתין ל-FIREBASE... ]</div>
             <img id="espCamImg" src="" alt="ESP-CAM" style="display:none;">
         </div>
-
     </div>
 
     <div id="cam-controls">
@@ -203,11 +246,51 @@
 </div>
 
 <script type="module">
-    import { initializeApp }              from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { initializeApp }                   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const API_KEY = "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";
+    // ─── API KEY — נשמר ב-localStorage בלבד, לא בקוד ─────────────
+    const LS_KEY      = "fazbear_groq_key";
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const apiStatus   = document.getElementById('apiStatus');
 
+    function getApiKey() {
+        return localStorage.getItem(LS_KEY) || "";
+    }
+
+    function updateApiStatus() {
+        const key = getApiKey();
+        if (key && key.startsWith("gsk_")) {
+            apiStatus.textContent = "[ ✓ מפתח שמור ]";
+            apiStatus.className   = "ok";
+            apiKeyInput.placeholder = "gsk_••••••••••••";
+        } else {
+            apiStatus.textContent = "[ לא מוגדר ]";
+            apiStatus.className   = "err";
+        }
+    }
+
+    updateApiStatus();
+
+    document.getElementById('apiSaveBtn').addEventListener('click', () => {
+        const val = apiKeyInput.value.trim();
+        if (!val.startsWith("gsk_")) {
+            apiStatus.textContent = "[ ✗ מפתח לא תקין — חייב להתחיל ב-gsk_ ]";
+            apiStatus.className   = "err";
+            return;
+        }
+        localStorage.setItem(LS_KEY, val);
+        apiKeyInput.value = "";
+        updateApiStatus();
+    });
+
+    document.getElementById('apiClearBtn').addEventListener('click', () => {
+        localStorage.removeItem(LS_KEY);
+        apiKeyInput.value = "";
+        updateApiStatus();
+    });
+
+    // ─── Firebase ─────────────────────────────────────────────────
     const firebaseConfig = {
         apiKey:            "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
         authDomain:        "project-shalty.firebaseapp.com",
@@ -229,7 +312,7 @@
     const sysStatus = document.getElementById('sysStatus');
 
     // ─── ESP-CAM דרך Firebase ─────────────────────────────────────
-    let espListening  = false;
+    let espListening   = false;
     let espUnsubscribe = null;
 
     document.getElementById('espBtn').addEventListener('click', () => {
@@ -239,19 +322,16 @@
         const dot         = document.getElementById('espDot');
 
         if (!espListening) {
-            // מתחיל להאזין ל-Firebase
-            espListening = true;
-            espBtn.textContent = "כבה ESP-CAM";
+            espListening            = true;
+            espBtn.textContent      = "כבה ESP-CAM";
             placeholder.textContent = "[ מחכה לפריים ראשון... ]";
 
             const cameraRef = ref(db, 'camera');
             espUnsubscribe = onValue(cameraRef, (snapshot) => {
                 const data = snapshot.val();
                 if (!data || !data.frame) return;
-
-                // מציג את הפריים מ-Firebase
-                img.src = "data:image/jpeg;base64," + data.frame;
-                img.style.display = "block";
+                img.src                   = "data:image/jpeg;base64," + data.frame;
+                img.style.display         = "block";
                 placeholder.style.display = "none";
                 dot.classList.replace('off', 'on');
             }, (error) => {
@@ -260,21 +340,27 @@
             });
 
         } else {
-            // מפסיק האזנה
             if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; }
-            espListening = false;
-            img.src = "";
-            img.style.display = "none";
+            espListening              = false;
+            img.src                   = "";
+            img.style.display         = "none";
             placeholder.style.display = "flex";
-            placeholder.textContent = "[ NO SIGNAL ]";
+            placeholder.textContent   = "[ NO SIGNAL ]";
             dot.classList.replace('on', 'off');
-            espBtn.textContent = "הפעל ESP-CAM";
+            espBtn.textContent        = "הפעל ESP-CAM";
         }
     });
 
     // ─── שליחה ל-AI (Groq) ────────────────────────────────────────
     async function askAI(text) {
         if (!text.trim()) return;
+
+        const key = getApiKey();
+        if (!key) {
+            answerBox.textContent = "[ERROR]: הכנס Groq API Key בשדה למעלה ולחץ שמור";
+            return;
+        }
+
         sendBtn.disabled = true;
         micBtn.disabled  = true;
         answerBox.textContent = "מנתח... [SCANNING]";
@@ -284,15 +370,15 @@
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Content-Type':  'application/json',
+                    'Authorization': `Bearer ${key}`
                 },
                 body: JSON.stringify({
-                    model: "llama3-8b-8192",
+                    model:      "llama-3.1-8b-instant", // ← תוקן
                     max_tokens: 1000,
                     messages: [
                         {
-                            role: "system",
+                            role:    "system",
                             content: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר.
                                       ענה בעברית בטון קריפי ומסתורי.
                                       תשלב מדי פעם [ERROR], [STATIC] או [MOVEMENT DETECTED].
@@ -304,25 +390,32 @@
             });
 
             const data = await response.json();
+
             if (!response.ok) {
+                if (response.status === 401) {
+                    apiStatus.textContent = "[ ✗ מפתח לא תקין — צור חדש ב-console.groq.com ]";
+                    apiStatus.className   = "err";
+                    localStorage.removeItem(LS_KEY);
+                }
                 answerBox.textContent = `[ERROR ${response.status}]: ${data?.error?.message || "שגיאה"}`;
                 return;
             }
+
             const reply = data.choices[0].message.content;
             answerBox.textContent = reply;
             speakText(reply);
 
             await push(ref(db, 'security_logs'), {
                 timestamp: Date.now(),
-                prompt: text,
-                response: reply
+                prompt:    text,
+                response:  reply
             });
 
         } catch (err) {
             answerBox.textContent = `[NETWORK ERROR]: ${err.message}`;
         } finally {
-            sendBtn.disabled = false;
-            micBtn.disabled  = false;
+            sendBtn.disabled      = false;
+            micBtn.disabled       = false;
             sysStatus.textContent = "SYSTEM: ONLINE";
         }
     }
@@ -353,8 +446,8 @@
             } catch (err) { alert("שגיאת מצלמה: " + err.message); }
         } else {
             camStream.getTracks().forEach(t => t.stop());
-            cam.srcObject = null;
-            camStream = null;
+            cam.srcObject      = null;
+            camStream          = null;
             camBtn.textContent = 'הפעל מצלמה';
         }
     });
@@ -363,7 +456,7 @@
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
         micBtn.textContent = "🎤 לא נתמך";
-        micBtn.disabled = true;
+        micBtn.disabled    = true;
     } else {
         const recognition          = new SpeechRec();
         recognition.lang           = 'he-IL';
@@ -376,7 +469,7 @@
             voiceText.textContent = "מאזין...";
             recognition.start();
         });
-        recognition.onstart  = () => { isListening = true; micBtn.classList.add('listening'); micBtn.textContent = "⏹ עצור"; };
+        recognition.onstart  = () => { isListening = true;  micBtn.classList.add('listening');    micBtn.textContent = "⏹ עצור"; };
         recognition.onresult = (e) => { const t = e.results[0][0].transcript; voiceText.textContent = "קלט קולי: " + t; userInput.value = t; askAI(t); };
         recognition.onerror  = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
         recognition.onend    = () => {
@@ -391,15 +484,18 @@
     function speakText(text) {
         if (!window.speechSynthesis) return;
         window.speechSynthesis.cancel();
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.lang  = 'he-IL'; speech.pitch = 0.7; speech.rate = 0.9;
+        const speech  = new SpeechSynthesisUtterance(text);
+        speech.lang   = 'he-IL';
+        speech.pitch  = 0.7;
+        speech.rate   = 0.9;
         window.speechSynthesis.speak(speech);
     }
 
     // ─── שעון ─────────────────────────────────────────────────────
     const clockEl = document.getElementById('clock');
     const tick = () => { clockEl.textContent = new Date().toLocaleTimeString('he-IL'); };
-    tick(); setInterval(tick, 1000);
+    tick();
+    setInterval(tick, 1000);
 
 </script>
 </body>
