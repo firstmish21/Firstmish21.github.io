@@ -187,6 +187,16 @@
         }
         .dot.on  { background: #00ff41; box-shadow: 0 0 6px #00ff41; }
         .dot.off { background: #440000; }
+
+        /* ─── אינדיקטור TTS ───────────────────────────────── */
+        #ttsStatus {
+            font-size: 0.75em;
+            color: #006600;
+            margin-top: 5px;
+            min-height: 1em;
+            text-align: center;
+        }
+        #ttsStatus.speaking { color: #00ff41; animation: pulse 1s infinite; }
     </style>
 </head>
 <body>
@@ -234,6 +244,7 @@
     </div>
 
     <div id="aiAnswer">מערכת מוכנה... [Awaiting Input]</div>
+    <div id="ttsStatus">[ TTS READY ]</div>
 
     <div class="input-group">
         <input type="text" id="userInput" placeholder="הכנס פקודה...">
@@ -249,7 +260,7 @@
     import { initializeApp }                   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ─── API KEY — נשמר ב-localStorage בלבד, לא בקוד ─────────────
+    // ─── API KEY — localStorage בלבד ──────────────────────────────
     const LS_KEY      = "fazbear_groq_key";
     const apiKeyInput = document.getElementById('apiKeyInput');
     const apiStatus   = document.getElementById('apiStatus');
@@ -261,12 +272,12 @@
     function updateApiStatus() {
         const key = getApiKey();
         if (key && key.startsWith("gsk_")) {
-            apiStatus.textContent = "[ ✓ מפתח שמור ]";
-            apiStatus.className   = "ok";
+            apiStatus.textContent   = "[ ✓ מפתח שמור ]";
+            apiStatus.className     = "ok";
             apiKeyInput.placeholder = "gsk_••••••••••••";
         } else {
-            apiStatus.textContent = "[ לא מוגדר ]";
-            apiStatus.className   = "err";
+            apiStatus.textContent   = "[ לא מוגדר ]";
+            apiStatus.className     = "err";
         }
     }
 
@@ -310,6 +321,66 @@
     const micBtn    = document.getElementById('micBtn');
     const voiceText = document.getElementById('voiceText');
     const sysStatus = document.getElementById('sysStatus');
+    const ttsStatus = document.getElementById('ttsStatus');
+
+    // ─── TTS — גרסה משופרת ────────────────────────────────────────
+    function speakText(text) {
+        if (!window.speechSynthesis) {
+            ttsStatus.textContent = "[ TTS לא נתמך בדפדפן זה ]";
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance    = new SpeechSynthesisUtterance(text);
+        utterance.pitch    = 0.7;
+        utterance.rate     = 0.9;
+        utterance.volume   = 1;
+
+        utterance.onstart = () => {
+            ttsStatus.textContent = "[ ◉ SPEAKING... ]";
+            ttsStatus.className   = "speaking";
+        };
+        utterance.onend = () => {
+            ttsStatus.textContent = "[ TTS READY ]";
+            ttsStatus.className   = "";
+        };
+        utterance.onerror = (e) => {
+            ttsStatus.textContent = `[ TTS ERROR: ${e.error} ]`;
+            ttsStatus.className   = "";
+        };
+
+        function assignVoiceAndSpeak() {
+            const voices  = window.speechSynthesis.getVoices();
+            const heVoice = voices.find(v => v.lang.startsWith('he'));
+            const anyVoice = voices[0];
+
+            if (heVoice) {
+                utterance.voice = heVoice;
+                utterance.lang  = heVoice.lang;
+                ttsStatus.textContent = `[ קול: ${heVoice.name} ]`;
+            } else if (anyVoice) {
+                // אין קול עברי — לוקח את הראשון הזמין
+                utterance.voice = anyVoice;
+                utterance.lang  = anyVoice.lang;
+                ttsStatus.textContent = `[ קול: ${anyVoice.name} ]`;
+            } else {
+                utterance.lang = 'he-IL';
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Chrome טוען קולות אסינכרונית — צריך לחכות
+        if (window.speechSynthesis.getVoices().length > 0) {
+            assignVoiceAndSpeak();
+        } else {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.onvoiceschanged = null;
+                assignVoiceAndSpeak();
+            };
+        }
+    }
 
     // ─── ESP-CAM דרך Firebase ─────────────────────────────────────
     let espListening   = false;
@@ -361,8 +432,8 @@
             return;
         }
 
-        sendBtn.disabled = true;
-        micBtn.disabled  = true;
+        sendBtn.disabled      = true;
+        micBtn.disabled       = true;
         answerBox.textContent = "מנתח... [SCANNING]";
         sysStatus.textContent = "SYSTEM: PROCESSING";
 
@@ -374,7 +445,7 @@
                     'Authorization': `Bearer ${key}`
                 },
                 body: JSON.stringify({
-                    model:      "llama-3.1-8b-instant", // ← תוקן
+                    model:      "llama-3.1-8b-instant",
                     max_tokens: 1000,
                     messages: [
                         {
@@ -403,7 +474,7 @@
 
             const reply = data.choices[0].message.content;
             answerBox.textContent = reply;
-            speakText(reply);
+            speakText(reply); // ← מדבר את התגובה
 
             await push(ref(db, 'security_logs'), {
                 timestamp: Date.now(),
@@ -469,8 +540,19 @@
             voiceText.textContent = "מאזין...";
             recognition.start();
         });
-        recognition.onstart  = () => { isListening = true;  micBtn.classList.add('listening');    micBtn.textContent = "⏹ עצור"; };
-        recognition.onresult = (e) => { const t = e.results[0][0].transcript; voiceText.textContent = "קלט קולי: " + t; userInput.value = t; askAI(t); };
+        recognition.onstart  = () => {
+            isListening = true;
+            micBtn.classList.add('listening');
+            micBtn.textContent = "⏹ עצור";
+            // עוצר TTS כשמדברים
+            window.speechSynthesis?.cancel();
+        };
+        recognition.onresult = (e) => {
+            const t = e.results[0][0].transcript;
+            voiceText.textContent = "קלט קולי: " + t;
+            userInput.value = t;
+            askAI(t);
+        };
         recognition.onerror  = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
         recognition.onend    = () => {
             isListening = false;
@@ -478,17 +560,6 @@
             micBtn.textContent = "🎤 מיקרופון";
             if (voiceText.textContent === "מאזין...") voiceText.textContent = "[לא זוהה קול]";
         };
-    }
-
-    // ─── סינתזת קול ───────────────────────────────────────────────
-    function speakText(text) {
-        if (!window.speechSynthesis) return;
-        window.speechSynthesis.cancel();
-        const speech  = new SpeechSynthesisUtterance(text);
-        speech.lang   = 'he-IL';
-        speech.pitch  = 0.7;
-        speech.rate   = 0.9;
-        window.speechSynthesis.speak(speech);
     }
 
     // ─── שעון ─────────────────────────────────────────────────────
