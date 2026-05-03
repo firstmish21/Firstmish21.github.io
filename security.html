@@ -1,138 +1,162 @@
-Fazbear security fixed · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת אבטחה פאזבייר - סופי</title>
+    <meta charset="UTF-8"> <!-- кодировка страницы -->
+    <title>מערכת אבטחה פאזבייר</title>
     <style>
-        /* עיצוב Matrix & FNAF Style */
+        /* цвет фона страницы - чёрный */
         body {
-            background-color: #000;
-            color: #00ff41;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: black;
+            color: #00ff41; /* цвет текста - зелёный */
+            font-family: 'Courier New', monospace; /* шрифт как у терминала */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            text-shadow: 0 0 5px #00ff41;
+            min-height: 100vh; /* страница занимает весь экран по высоте */
         }
- 
+
+        /* главный блок - "терминал" */
         #terminal {
             width: 85%;
             max-width: 900px;
-            border: 3px double #00ff41;
+            border: 3px double #00ff41; /* двойная зелёная рамка */
             padding: 30px;
-            background-color: rgba(0, 10, 0, 0.95);
-            box-shadow: inset 0 0 30px #004400, 0 0 20px #00ff41;
-            position: relative;
+            background-color: rgba(0, 10, 0, 0.95); /* почти чёрный фон */
+            box-shadow: 0 0 20px #00ff41; /* зелёное свечение снаружи */
         }
- 
-        h2 { 
-            text-align: center; 
-            letter-spacing: 8px; 
-            border-bottom: 1px solid #00ff41;
+
+        /* заголовок страницы */
+        h2 {
+            text-align: center;
+            letter-spacing: 8px; /* расстояние между буквами */
+            border-bottom: 1px solid #00ff41; /* линия под заголовком */
             padding-bottom: 10px;
         }
- 
-        #analysisContent {
-            height: 250px;
-            overflow-y: auto;
+
+        /* блок где показывается ответ AI */
+        #aiAnswer {
+            height: 200px;
+            overflow-y: auto; /* если текст длинный - появится скролл */
             border: 1px solid #004400;
-            margin: 20px 0;
             padding: 15px;
+            margin: 20px 0;
             background: #050505;
             line-height: 1.6;
-            font-size: 1.1em;
-            scrollbar-width: thin;
-            scrollbar-color: #00ff41 black;
         }
- 
+
+        /* блок с кнопками и полем ввода */
         .input-group {
             display: flex;
-            gap: 12px;
+            gap: 10px; /* отступ между элементами */
         }
- 
+
+        /* поле для ввода текста */
         input {
-            flex-grow: 1;
-            background: #000;
+            flex-grow: 1; /* занимает всё свободное место */
+            background: black;
             border: 1px solid #00ff41;
             color: #00ff41;
-            padding: 12px;
+            padding: 10px;
             font-family: inherit;
             outline: none;
         }
- 
+
+        /* стиль всех кнопок */
         button {
             background: #002200;
             color: #00ff41;
             border: 1px solid #00ff41;
-            padding: 10px 25px;
-            cursor: pointer;
+            padding: 10px 20px;
+            cursor: pointer; /* курсор меняется на руку при наведении */
             font-weight: bold;
-            transition: all 0.2s;
         }
- 
+
+        /* кнопка меняет цвет при наведении мыши */
         button:hover {
             background: #00ff41;
-            color: #000;
+            color: black;
         }
- 
-        .listening {
-            animation: pulse 1s infinite;
-            background: #440000 !important;
-            border-color: #ff0000 !important;
-            color: #ff0000 !important;
+
+        /* видео с камеры */
+        #camera {
+            width: 100%;
+            max-width: 640px;
+            height: 220px;
+            object-fit: cover; /* видео заполняет блок без искажений */
+            border: 2px solid #00ff41;
+            display: block;
+            margin: 0 auto 10px auto;
+            filter: grayscale(30%); /* слегка чёрно-белый эффект */
         }
- 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0px #ff0000; }
-            50% { box-shadow: 0 0 15px #ff0000; }
-            100% { box-shadow: 0 0 0px #ff0000; }
+
+        /* подпись над камерой */
+        #camLabel {
+            text-align: center;
+            font-size: 0.8em;
+            letter-spacing: 4px;
+            color: #00aa33;
+            margin-bottom: 5px;
         }
- 
-        #status-bar {
+
+        /* строка статуса вверху */
+        #statusBar {
             display: flex;
             justify-content: space-between;
             font-size: 0.8em;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
- 
+
 <div id="terminal">
-    <div id="status-bar">
-        <span>LOCAL_IP: 192.168.1.108</span>
+
+    <!-- строка статуса: IP, статус, часы -->
+    <div id="statusBar">
+        <span>LOCAL_IP: 192.168.0.150</span>
         <span>SYSTEM: ONLINE</span>
-        <span id="clock"></span>
+        <span id="clock"></span> <!-- сюда JavaScript вставляет время -->
     </div>
+
+    <!-- заголовок -->
     <h2>FAZBEAR SECURITY AI</h2>
-    
-    <div id="analysisContent">מערכת מוכנה... ממתין לקלט מהמאבטח. [Awaiting Input]</div>
- 
-    <div class="input-group">
-        <input type="text" id="analysisPrompt" placeholder="הכנס פקודה למערכת..." autocomplete="off">
-        <button id="analyzeBtn">בצע ניתוח</button>
-        <button id="micBtn">מיקרופון</button>
+
+    <!-- подпись над камерой -->
+    <div id="camLabel">[ CAM-01 / MAIN ENTRANCE ]</div>
+
+    <!-- видео элемент - показывает камеру -->
+    <video id="camera" autoplay muted playsinline></video>
+
+    <!-- кнопка включения/выключения камеры -->
+    <div style="text-align:center; margin-bottom:15px;">
+        <button id="camBtn">הפעל מצלמה</button>
     </div>
-    
-    <div id="transcript" style="font-size: 0.8em; color: #00661a; margin-top: 10px;"></div>
+
+    <!-- блок где появляется ответ AI -->
+    <div id="aiAnswer">מערכת מוכנה... [Awaiting Input]</div>
+
+    <!-- поле ввода + кнопки -->
+    <div class="input-group">
+        <input type="text" id="userInput" placeholder="הכנס פקודה..."> <!-- поле ввода текста -->
+        <button id="sendBtn">שלח</button> <!-- кнопка отправки -->
+        <button id="micBtn">מיקרופון</button> <!-- кнопка микрофона -->
+    </div>
+
+    <!-- сюда выводится распознанный голос -->
+    <div id="voiceText" style="font-size:0.8em; color:#00661a; margin-top:8px;"></div>
+
 </div>
- 
-<!-- טעינת Firebase מרחוק -->
+
+<!-- подключаем Firebase -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
- 
-    // --- הגדרות אישיות (חובה למלא!) ---
-    const ANTHROPIC_API_KEY = "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";
-    
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"; // импорт Firebase
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"; // импорт базы данных
+
+    // ключ Anthropic API - ЗАМЕНИТЬ НА СВОЙ
+    const API_KEY = "YOUR_API_KEY_HERE";
+
+    // настройки Firebase проекта
     const firebaseConfig = {
         apiKey: "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
         authDomain: "project-shalty.firebaseapp.com",
@@ -142,104 +166,112 @@ Copy
         messagingSenderId: "984471122116",
         appId: "1:984471122116:web:8f958b467378fd19475991"
     };
- 
-    // אתחול Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
- 
-    // --- לוגיקה של ה-AI ---
-    async function callCharacterAI(userText) {
-        const analysisContent = document.getElementById('analysisContent');
-        analysisContent.innerHTML = "מנתח נתונים... <br>[SCANNING FREQUENCIES]";
- 
-        try {
-            const response = await fetch("https://api.anthropic.com/v1/messages", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': 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,
-                    'anthropic-version': '2023-06-01',
-                    'anthropic-dangerous-direct-browser-access': 'true'
-                },
-                body: JSON.stringify({
-                    model: "claude-haiku-4-5-20251001",
-                    max_tokens: 1000,
-                    system: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
-                             ענה בעברית בטון קריפי, טכנולוגי ומסתורי. 
-                             תשלב מדי פעם מילים כמו [ERROR], [STATIC] או [MOVEMENT DETECTED]. 
-                             אל תגיד שאתה AI, אתה חלק מהמערכת של המקום.`,
-                    messages: [{ role: "user", content: userText }]
-                })
-            });
- 
-            const result = await response.json();
- 
-            if (!response.ok || !result.content || result.content.length === 0) {
-                const reason = result?.error?.message || `HTTP ${response.status}`;
-                analysisContent.textContent = `[SYSTEM OVERLOAD]: ${reason}`;
-                return;
-            }
- 
-            const aiReply = result.content[0].text;
- 
-            analysisContent.textContent = aiReply;
-            speakText(aiReply);
- 
-            // שמירה ל-Firebase
-            push(ref(db, 'security_logs'), {
-                timestamp: Date.now(),
-                prompt: userText,
-                response: aiReply
-            });
- 
-        } catch (error) {
-            console.error("AI Error:", error);
-            analysisContent.textContent = "[CRITICAL ERROR]: הגישה לשרת נחסמה על ידי גורם לא ידוע.";
+
+    const app = initializeApp(firebaseConfig); // запускаем Firebase
+    const db = getDatabase(app); // получаем доступ к базе данных
+
+    // --- функция отправки запроса к AI ---
+    async function askAI(text) {
+        const answerBox = document.getElementById('aiAnswer'); // находим блок для ответа
+        answerBox.textContent = "מנתח... [SCANNING]"; // показываем что идёт загрузка
+
+        // отправляем запрос к Anthropic API
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: 'POST', // метод запроса
+            headers: {
+                'Content-Type': 'application/json', // тип данных
+                'x-api-key': API_KEY, // наш ключ
+                'anthropic-version': '2023-06-01', // версия API
+                'anthropic-dangerous-direct-browser-access': 'true' // разрешаем запрос из браузера
+            },
+            body: JSON.stringify({ // тело запроса в формате JSON
+                model: "claude-haiku-4-5-20251001", // модель AI
+                max_tokens: 1000, // максимум слов в ответе
+                system: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. 
+                         ענה בעברית בטון קריפי ומסתורי. 
+                         תשלב מדי פעם [ERROR], [STATIC] או [MOVEMENT DETECTED].
+                         אל תגיד שאתה AI.`, // инструкция для AI
+                messages: [{ role: "user", content: text }] // сообщение пользователя
+            })
+        });
+
+        const data = await response.json(); // получаем ответ в формате JSON
+
+        // проверяем что ответ пришёл нормально
+        if (!response.ok || !data.content) {
+            answerBox.textContent = "[ERROR]: " + (data?.error?.message || "שגיאה לא ידועה");
+            return;
         }
+
+        const reply = data.content[0].text; // достаём текст ответа
+        answerBox.textContent = reply; // показываем ответ на странице
+        speakText(reply); // озвучиваем ответ
+
+        // сохраняем в Firebase
+        push(ref(db, 'security_logs'), {
+            timestamp: Date.now(), // время запроса
+            prompt: text, // вопрос пользователя
+            response: reply // ответ AI
+        });
     }
- 
-    // --- זיהוי קולי ---
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'he-IL';
- 
-    document.getElementById('micBtn').addEventListener('click', function() {
-        recognition.start();
-        this.classList.add('listening');
+
+    // --- камера ---
+    let camOn = false; // переменная состояния камеры
+    document.getElementById('camBtn').addEventListener('click', async () => {
+        if (!camOn) {
+            // запрашиваем доступ к камере
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            document.getElementById('camera').srcObject = stream; // подключаем видео
+            document.getElementById('camBtn').textContent = 'כבה מצלמה'; // меняем текст кнопки
+            camOn = true; // камера включена
+        } else {
+            // останавливаем все дорожки видео
+            document.getElementById('camera').srcObject?.getTracks().forEach(t => t.stop());
+            document.getElementById('camera').srcObject = null; // убираем видео
+            document.getElementById('camBtn').textContent = 'הפעל מצלמה'; // меняем текст кнопки
+            camOn = false; // камера выключена
+        }
     });
- 
+
+    // --- кнопка отправки текста ---
+    document.getElementById('sendBtn').addEventListener('click', () => {
+        const text = document.getElementById('userInput').value; // берём текст из поля
+        if (text) { // если поле не пустое
+            askAI(text); // отправляем AI
+            document.getElementById('userInput').value = ""; // очищаем поле
+        }
+    });
+
+    // --- голосовое распознавание ---
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); // создаём объект распознавания
+    recognition.lang = 'he-IL'; // язык - иврит
+
+    document.getElementById('micBtn').addEventListener('click', function () {
+        recognition.start(); // запускаем распознавание
+        this.style.background = '#440000'; // меняем цвет кнопки пока слушает
+    });
+
     recognition.onresult = (event) => {
-        const text = event.results[0][0].transcript;
-        document.getElementById('transcript').textContent = "קלט קולי: " + text;
-        document.getElementById('micBtn').classList.remove('listening');
-        callCharacterAI(text);
+        const text = event.results[0][0].transcript; // достаём распознанный текст
+        document.getElementById('voiceText').textContent = "קלט קולי: " + text; // показываем что услышали
+        document.getElementById('micBtn').style.background = '#002200'; // возвращаем цвет кнопки
+        askAI(text); // отправляем AI
     };
- 
-    // --- הקראת טקסט ---
+
+    // --- озвучка ответа AI ---
     function speakText(text) {
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.lang = 'he-IL';
-        speech.pitch = 0.7; // קול עמוק
-        speech.rate = 0.9;  // קצב מעט איטי
-        window.speechSynthesis.speak(speech);
+        const speech = new SpeechSynthesisUtterance(text); // создаём объект речи
+        speech.lang = 'he-IL'; // язык - иврит
+        speech.pitch = 0.7; // низкий голос
+        speech.rate = 0.9; // чуть медленнее обычного
+        window.speechSynthesis.speak(speech); // произносим
     }
- 
-    // --- כפתור שליחה ידני ---
-    document.getElementById('analyzeBtn').addEventListener('click', () => {
-        const val = document.getElementById('analysisPrompt').value;
-        if(val) {
-            callCharacterAI(val);
-            document.getElementById('analysisPrompt').value = "";
-        }
-    });
- 
-    // שעון מערכת בצד
+
+    // --- часы ---
     setInterval(() => {
-        document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString(); // обновляем время каждую секунду
     }, 1000);
 </script>
- 
-</body>
-</html>
- 
+
 </body>
 </html>
