@@ -32,8 +32,6 @@
             padding-bottom: 10px;
             margin-top: 0;
         }
-
-        /* ─── API KEY PANEL ───────────────────────────────── */
         #apiPanel {
             border: 1px solid #004400;
             padding: 12px 15px;
@@ -44,11 +42,7 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        #apiPanel label {
-            font-size: 0.8em;
-            color: #00aa33;
-            white-space: nowrap;
-        }
+        #apiPanel label { font-size: 0.8em; color: #00aa33; white-space: nowrap; }
         #apiKeyInput {
             flex-grow: 1;
             background: black;
@@ -61,142 +55,69 @@
             min-width: 200px;
         }
         #apiKeyInput::placeholder { color: #004400; }
-        #apiStatus {
-            font-size: 0.8em;
-            white-space: nowrap;
-        }
+        #apiStatus { font-size: 0.8em; white-space: nowrap; }
         #apiStatus.ok  { color: #00ff41; }
         #apiStatus.err { color: #ff4444; }
-
-        /* ─── מצלמות ──────────────────────────────────────── */
-        #cameras-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .cam-block {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .cam-label {
-            text-align: center;
-            font-size: 0.75em;
-            letter-spacing: 3px;
-            color: #00aa33;
-            margin-bottom: 4px;
-        }
+        #cameras-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .cam-block { flex: 1; display: flex; flex-direction: column; }
+        .cam-label { text-align: center; font-size: 0.75em; letter-spacing: 3px; color: #00aa33; margin-bottom: 4px; }
         #camera {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border: 2px solid #00ff41;
-            display: block;
-            filter: grayscale(30%);
-            background: #050505;
+            width: 100%; height: 200px; object-fit: cover;
+            border: 2px solid #00ff41; display: block;
+            filter: grayscale(30%); background: #050505;
         }
         #espCamImg {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border: 2px solid #00ff41;
-            display: block;
-            filter: grayscale(30%);
-            background: #050505;
+            width: 100%; height: 200px; object-fit: cover;
+            border: 2px solid #00ff41; display: block;
+            filter: grayscale(30%); background: #050505;
         }
         #espPlaceholder {
-            width: 100%;
-            height: 200px;
-            border: 2px solid #004400;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #050505;
-            color: #004400;
-            font-size: 0.85em;
-            letter-spacing: 2px;
+            width: 100%; height: 200px;
+            border: 2px solid #004400; display: flex;
+            align-items: center; justify-content: center;
+            background: #050505; color: #004400;
+            font-size: 0.85em; letter-spacing: 2px;
         }
-        #cam-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            align-items: flex-end;
-        }
-        .cam-btn-group {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        #cam-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end; }
+        .cam-btn-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
         #aiAnswer {
-            height: 180px;
-            overflow-y: auto;
-            border: 1px solid #004400;
-            padding: 15px;
-            margin: 15px 0;
-            background: #050505;
-            line-height: 1.6;
-            white-space: pre-wrap;
+            height: 180px; overflow-y: auto;
+            border: 1px solid #004400; padding: 15px;
+            margin: 15px 0; background: #050505;
+            line-height: 1.6; white-space: pre-wrap;
         }
+        /* סטטוס TTS */
+        #ttsStatus {
+            text-align: center;
+            font-size: 0.75em;
+            color: #006600;
+            margin-bottom: 10px;
+            min-height: 1em;
+        }
+        #ttsStatus.speaking { color: #00ff41; }
         .input-group { display: flex; gap: 10px; }
         input[type="text"], input[type="password"] {
-            flex-grow: 1;
-            background: black;
-            border: 1px solid #00ff41;
-            color: #00ff41;
-            padding: 10px;
-            font-family: inherit;
-            outline: none;
-            font-size: 1em;
+            flex-grow: 1; background: black;
+            border: 1px solid #00ff41; color: #00ff41;
+            padding: 10px; font-family: inherit;
+            outline: none; font-size: 1em;
         }
         button {
-            background: #002200;
-            color: #00ff41;
-            border: 1px solid #00ff41;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
+            background: #002200; color: #00ff41;
+            border: 1px solid #00ff41; padding: 10px 20px;
+            cursor: pointer; font-weight: bold;
             font-family: inherit;
             transition: background 0.15s, color 0.15s;
             white-space: nowrap;
         }
         button:hover    { background: #00ff41; color: black; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #statusBar {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8em;
-            margin-bottom: 15px;
-        }
-        #micBtn.listening {
-            background: #440000;
-            border-color: #ff0000;
-            color: #ff4444;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.5; }
-        }
-        .dot {
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            margin-left: 5px;
-            vertical-align: middle;
-        }
+        #statusBar { display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 15px; }
+        #micBtn.listening { background: #440000; border-color: #ff0000; color: #ff4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 5px; vertical-align: middle; }
         .dot.on  { background: #00ff41; box-shadow: 0 0 6px #00ff41; }
         .dot.off { background: #440000; }
-
-        /* ─── אינדיקטור TTS ───────────────────────────────── */
-        #ttsStatus {
-            font-size: 0.75em;
-            color: #006600;
-            margin-top: 5px;
-            min-height: 1em;
-            text-align: center;
-        }
-        #ttsStatus.speaking { color: #00ff41; animation: pulse 1s infinite; }
     </style>
 </head>
 <body>
@@ -209,7 +130,7 @@
 
     <h2>FAZBEAR SECURITY AI</h2>
 
-    <!-- ─── API KEY PANEL ─── -->
+    <!-- API KEY -->
     <div id="apiPanel">
         <label>GROQ API KEY:</label>
         <input type="password" id="apiKeyInput" placeholder="gsk_...">
@@ -218,7 +139,7 @@
         <span id="apiStatus" class="err">[ לא מוגדר ]</span>
     </div>
 
-    <!-- ─── מצלמות ─── -->
+    <!-- מצלמות -->
     <div id="cameras-row">
         <div class="cam-block">
             <div class="cam-label">[ CAM-01 / MAIN ENTRANCE ]</div>
@@ -226,7 +147,7 @@
         </div>
         <div class="cam-block">
             <div class="cam-label">
-                [ CAM-02 / ESP-CAM — FIREBASE ]
+                [ CAM-02 / ESP-CAM ]
                 <span id="espDot" class="dot off"></span>
             </div>
             <div id="espPlaceholder">[ ממתין ל-FIREBASE... ]</div>
@@ -244,7 +165,7 @@
     </div>
 
     <div id="aiAnswer">מערכת מוכנה... [Awaiting Input]</div>
-    <div id="ttsStatus">[ TTS READY ]</div>
+    <div id="ttsStatus">[ 🔊 ESP32 SPEAKER READY ]</div>
 
     <div class="input-group">
         <input type="text" id="userInput" placeholder="הכנס פקודה...">
@@ -257,17 +178,15 @@
 </div>
 
 <script type="module">
-    import { initializeApp }                   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ─── API KEY — localStorage בלבד ──────────────────────────────
+    // ─── API KEY ───────────────────────────────────────────────────
     const LS_KEY      = "fazbear_groq_key";
     const apiKeyInput = document.getElementById('apiKeyInput');
     const apiStatus   = document.getElementById('apiStatus');
 
-    function getApiKey() {
-        return localStorage.getItem(LS_KEY) || "";
-    }
+    function getApiKey() { return localStorage.getItem(LS_KEY) || ""; }
 
     function updateApiStatus() {
         const key = getApiKey();
@@ -276,17 +195,16 @@
             apiStatus.className     = "ok";
             apiKeyInput.placeholder = "gsk_••••••••••••";
         } else {
-            apiStatus.textContent   = "[ לא מוגדר ]";
-            apiStatus.className     = "err";
+            apiStatus.textContent = "[ לא מוגדר ]";
+            apiStatus.className   = "err";
         }
     }
-
     updateApiStatus();
 
     document.getElementById('apiSaveBtn').addEventListener('click', () => {
         const val = apiKeyInput.value.trim();
         if (!val.startsWith("gsk_")) {
-            apiStatus.textContent = "[ ✗ מפתח לא תקין — חייב להתחיל ב-gsk_ ]";
+            apiStatus.textContent = "[ ✗ מפתח לא תקין ]";
             apiStatus.className   = "err";
             return;
         }
@@ -323,62 +241,25 @@
     const sysStatus = document.getElementById('sysStatus');
     const ttsStatus = document.getElementById('ttsStatus');
 
-    // ─── TTS — גרסה משופרת ────────────────────────────────────────
-    function speakText(text) {
-        if (!window.speechSynthesis) {
-            ttsStatus.textContent = "[ TTS לא נתמך בדפדפן זה ]";
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-
-        const utterance    = new SpeechSynthesisUtterance(text);
-        utterance.pitch    = 0.7;
-        utterance.rate     = 0.9;
-        utterance.volume   = 1;
-
-        utterance.onstart = () => {
-            ttsStatus.textContent = "[ ◉ SPEAKING... ]";
+    // ─── שמירת טקסט ל-Firebase לESP32 ────────────────────────────
+    // ESP32 קורא את הטקסט ומבקש מ-Google TTS בעצמו
+    async function sendTextToESP32(text) {
+        try {
+            await set(ref(db, 'tts'), {
+                text:      text,
+                timestamp: Date.now(),
+                lang:      'iw'  // iw = עברית ב-Google TTS
+            });
+            ttsStatus.textContent = "[ 🔊 שולח לרמקול... ]";
             ttsStatus.className   = "speaking";
-        };
-        utterance.onend = () => {
-            ttsStatus.textContent = "[ TTS READY ]";
-            ttsStatus.className   = "";
-        };
-        utterance.onerror = (e) => {
-            ttsStatus.textContent = `[ TTS ERROR: ${e.error} ]`;
-            ttsStatus.className   = "";
-        };
-
-        function assignVoiceAndSpeak() {
-            const voices  = window.speechSynthesis.getVoices();
-            const heVoice = voices.find(v => v.lang.startsWith('he'));
-            const anyVoice = voices[0];
-
-            if (heVoice) {
-                utterance.voice = heVoice;
-                utterance.lang  = heVoice.lang;
-                ttsStatus.textContent = `[ קול: ${heVoice.name} ]`;
-            } else if (anyVoice) {
-                // אין קול עברי — לוקח את הראשון הזמין
-                utterance.voice = anyVoice;
-                utterance.lang  = anyVoice.lang;
-                ttsStatus.textContent = `[ קול: ${anyVoice.name} ]`;
-            } else {
-                utterance.lang = 'he-IL';
-            }
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Chrome טוען קולות אסינכרונית — צריך לחכות
-        if (window.speechSynthesis.getVoices().length > 0) {
-            assignVoiceAndSpeak();
-        } else {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.onvoiceschanged = null;
-                assignVoiceAndSpeak();
-            };
+            // מחזיר סטטוס נורמלי אחרי 5 שניות
+            setTimeout(() => {
+                ttsStatus.textContent = "[ 🔊 ESP32 SPEAKER READY ]";
+                ttsStatus.className   = "";
+            }, 5000);
+        } catch (err) {
+            console.error("Firebase TTS error:", err);
+            ttsStatus.textContent = "[ ✗ שגיאת Firebase ]";
         }
     }
 
@@ -395,21 +276,18 @@
         if (!espListening) {
             espListening            = true;
             espBtn.textContent      = "כבה ESP-CAM";
-            placeholder.textContent = "[ מחכה לפריים ראשון... ]";
+            placeholder.textContent = "[ מחכה לפריים... ]";
 
-            const cameraRef = ref(db, 'camera');
-            espUnsubscribe = onValue(cameraRef, (snapshot) => {
+            espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
                 const data = snapshot.val();
                 if (!data || !data.frame) return;
                 img.src                   = "data:image/jpeg;base64," + data.frame;
                 img.style.display         = "block";
                 placeholder.style.display = "none";
                 dot.classList.replace('off', 'on');
-            }, (error) => {
-                console.error("Firebase ESP-CAM error:", error);
+            }, (err) => {
                 placeholder.textContent = "[ שגיאת Firebase ]";
             });
-
         } else {
             if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; }
             espListening              = false;
@@ -422,13 +300,13 @@
         }
     });
 
-    // ─── שליחה ל-AI (Groq) ────────────────────────────────────────
+    // ─── שליחה ל-AI ───────────────────────────────────────────────
     async function askAI(text) {
         if (!text.trim()) return;
 
         const key = getApiKey();
         if (!key) {
-            answerBox.textContent = "[ERROR]: הכנס Groq API Key בשדה למעלה ולחץ שמור";
+            answerBox.textContent = "[ERROR]: הכנס Groq API Key למעלה";
             return;
         }
 
@@ -464,7 +342,7 @@
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    apiStatus.textContent = "[ ✗ מפתח לא תקין — צור חדש ב-console.groq.com ]";
+                    apiStatus.textContent = "[ ✗ מפתח לא תקין ]";
                     apiStatus.className   = "err";
                     localStorage.removeItem(LS_KEY);
                 }
@@ -474,8 +352,11 @@
 
             const reply = data.choices[0].message.content;
             answerBox.textContent = reply;
-            speakText(reply); // ← מדבר את התגובה
 
+            // ← שולח את הטקסט ל-ESP32 דרך Firebase
+            await sendTextToESP32(reply);
+
+            // שמירת לוג
             await push(ref(db, 'security_logs'), {
                 timestamp: Date.now(),
                 prompt:    text,
@@ -491,7 +372,7 @@
         }
     }
 
-    // ─── כפתור שליחה + Enter ──────────────────────────────────────
+    // ─── שליחה + Enter ────────────────────────────────────────────
     sendBtn.addEventListener('click', () => {
         const text = userInput.value.trim();
         if (text) { askAI(text); userInput.value = ""; }
@@ -517,8 +398,7 @@
             } catch (err) { alert("שגיאת מצלמה: " + err.message); }
         } else {
             camStream.getTracks().forEach(t => t.stop());
-            cam.srcObject      = null;
-            camStream          = null;
+            cam.srcObject = null; camStream = null;
             camBtn.textContent = 'הפעל מצלמה';
         }
     });
@@ -540,19 +420,8 @@
             voiceText.textContent = "מאזין...";
             recognition.start();
         });
-        recognition.onstart  = () => {
-            isListening = true;
-            micBtn.classList.add('listening');
-            micBtn.textContent = "⏹ עצור";
-            // עוצר TTS כשמדברים
-            window.speechSynthesis?.cancel();
-        };
-        recognition.onresult = (e) => {
-            const t = e.results[0][0].transcript;
-            voiceText.textContent = "קלט קולי: " + t;
-            userInput.value = t;
-            askAI(t);
-        };
+        recognition.onstart  = () => { isListening = true;  micBtn.classList.add('listening');    micBtn.textContent = "⏹ עצור"; };
+        recognition.onresult = (e) => { const t = e.results[0][0].transcript; voiceText.textContent = "קלט קולי: " + t; userInput.value = t; askAI(t); };
         recognition.onerror  = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
         recognition.onend    = () => {
             isListening = false;
@@ -565,8 +434,7 @@
     // ─── שעון ─────────────────────────────────────────────────────
     const clockEl = document.getElementById('clock');
     const tick = () => { clockEl.textContent = new Date().toLocaleTimeString('he-IL'); };
-    tick();
-    setInterval(tick, 1000);
+    tick(); setInterval(tick, 1000);
 
 </script>
 </body>
