@@ -56,7 +56,7 @@
             <video id="camera" autoplay muted playsinline></video>
         </div>
         <div class="cam-block">
-            <div class="cam-label">[ CAM-02 / ESP-CAM — LIVE ]<span id="espDot" class="dot off"></span></div>
+            <div class="cam-label">[ CAM-02 / ESP-CAM ]<span id="espDot" class="dot off"></span></div>
             <div id="espPlaceholder">[ ממתין לחיבור... ]</div>
             <img id="espCamImg" src="" alt="ESP-CAM" style="display:none;">
         </div>
@@ -128,8 +128,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
-
-    // ← בדיקה שה-DB מחובר
     console.log("[FB] Database initialized:", db ? "OK" : "FAIL");
 
     const answerBox = document.getElementById('aiAnswer');
@@ -151,51 +149,28 @@
         if (!espListening) {
             espListening            = true;
             espBtn.textContent      = "כבה ESP-CAM";
-            placeholder.textContent = "[ טוען סטרים... ]";
-            try {
-                const snap      = await get(ref(db, "/camera/stream_url"));
-                const streamUrl = snap.val();
-                if (!streamUrl) {
-                    espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
-                        const data = snapshot.val();
-                        if (!data || !data.frame) return;
-                        img.src = "data:image/jpeg;base64," + data.frame;
-                        img.style.display = "block";
-                        placeholder.style.display = "none";
-                        dot.classList.replace('off', 'on');
-                    });
-                    return;
-                }
-                img.src = streamUrl;
-                img.style.display = "block";
+            placeholder.textContent = "[ טוען... ]";
+
+            espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
+                const data = snapshot.val();
+                if (!data || !data.frame) return;
+                img.src                   = "data:image/jpeg;base64," + data.frame;
+                img.style.display         = "block";
                 placeholder.style.display = "none";
                 dot.classList.replace('off', 'on');
-                img.onerror = () => {
-                    img.onerror = null;
-                    espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
-                        const data = snapshot.val();
-                        if (!data || !data.frame) return;
-                        img.src = "data:image/jpeg;base64," + data.frame;
-                        img.style.display = "block";
-                        placeholder.style.display = "none";
-                        dot.classList.replace('off', 'on');
-                    });
-                };
-            } catch(e) {
-                placeholder.textContent = "[ שגיאת Firebase: " + e.message + " ]";
-            }
+            });
         } else {
             if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; }
-            espListening = false;
+            espListening              = false;
             const img         = document.getElementById('espCamImg');
             const placeholder = document.getElementById('espPlaceholder');
             const dot         = document.getElementById('espDot');
-            img.src = "";
-            img.style.display = "none";
+            img.src                   = "";
+            img.style.display         = "none";
             placeholder.style.display = "flex";
-            placeholder.textContent = "[ NO SIGNAL ]";
+            placeholder.textContent   = "[ NO SIGNAL ]";
             dot.classList.replace('on', 'off');
-            espBtn.textContent = "הפעל ESP-CAM";
+            espBtn.textContent        = "הפעל ESP-CAM";
         }
     });
 
