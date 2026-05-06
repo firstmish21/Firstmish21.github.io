@@ -546,7 +546,7 @@
             espBtn.textContent      = "כבה ESP-CAM";                // Строка 254: Меняем текст кнопки
             placeholder.textContent = "[ מחכה לפריים ראשון... ]";  // Строка 255: Сообщение ожидания
 
-            const cameraRef = ref(db, 'esp32cam'); // Строка 256: Ссылка на узел /esp32cam в Realtime DB (ESP-CAM пишет сюда)
+            const cameraRef = ref(db, 'camera'); // Строка 256: Ссылка על узел /camera в Realtime DB
 
             // Строка 257: onValue — подписываемся. Вызывается при КАЖДОМ изменении узла /camera
             // Возвращает функцию отписки — сохраняем в espUnsubscribe
