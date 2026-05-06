@@ -1,765 +1,467 @@
 <!DOCTYPE html>
 <!-- Строка 1: Объявление типа документа — браузер понимает что это HTML5 -->
 <html lang="he" dir="rtl">
-<!-- Строка 2: lang="he"=иврит, dir="rtl"=текст справа налево -->
 <head>
-<!-- Строка 3: Секция HEAD — не отображается на странице -->
     <meta charset="UTF-8">
-    <!-- Строка 4: Кодировка UTF-8 — без неё иврит и русский покажутся кракозябрами -->
     <title>מערכת אבטחה פאזבייר</title>
-    <!-- Строка 5: Текст во вкладке браузера -->
     <style>
-    /* Строка 6: Открытие блока CSS. Комментарии здесь только через "слэш-звёздочка", не через угловые скобки */
-
         body {
-        /* Строка 7: Стили для всего тела страницы */
             background-color: black;
-            /* Строка 8: Фон страницы — чёрный */
             color: #00ff41;
-            /* Строка 9: Цвет всего текста — ярко-зелёный ("Матрица") */
             font-family: 'Courier New', monospace;
-            /* Строка 10: Моноширинный шрифт — имитация терминала */
             display: flex;
-            /* Строка 11: Flexbox — дочерние элементы выстраиваются гибко */
             flex-direction: column;
-            /* Строка 12: Направление — колонка (сверху вниз) */
             align-items: center;
-            /* Строка 13: Выравнивание по горизонтали — по центру */
             justify-content: center;
-            /* Строка 14: Выравнивание по вертикали — по центру */
             min-height: 100vh;
-            /* Строка 15: Минимальная высота = 100% высоты окна (vh = viewport height) */
             margin: 0;
-            /* Строка 16: Убираем стандартные отступы браузера (обычно 8px) */
             padding: 20px 0;
-            /* Строка 17: Внутренний отступ 20px сверху и снизу, 0 по бокам */
             box-sizing: border-box;
-            /* Строка 18: padding и border входят в размер элемента, не добавляются сверху */
         }
-
         #terminal {
-        /* Строка 19: Главный контейнер-терминал */
             width: 90%;
-            /* Строка 20: Ширина 90% от родителя (body) */
             max-width: 1100px;
-            /* Строка 21: Максимум 1100px — не шире на больших мониторах */
             border: 3px double #00ff41;
-            /* Строка 22: Рамка 3px, double=двойная линия, зелёная */
             padding: 30px;
-            /* Строка 23: Внутренний отступ 30px со всех сторон */
             background-color: rgba(0, 10, 0, 0.95);
-            /* Строка 24: rgba(R,G,B,прозрачность) — почти чёрный с зелёным оттенком, 95% непрозрачности */
             box-shadow: 0 0 20px #00ff41;
-            /* Строка 25: Тень: X=0 Y=0 размытие=20px цвет=зелёный (эффект свечения) */
         }
-
         h2 {
-        /* Строка 26: Стили для заголовков <h2> */
             text-align: center;
-            /* Строка 27: Текст по центру */
             letter-spacing: 8px;
-            /* Строка 28: 8px между буквами — как на военном дисплее */
             border-bottom: 1px solid #00ff41;
-            /* Строка 29: Тонкая зелёная линия снизу */
             padding-bottom: 10px;
-            /* Строка 30: Отступ 10px между текстом и линией */
             margin-top: 0;
-            /* Строка 31: Убираем стандартный верхний отступ заголовка */
         }
-
         #apiPanel {
-        /* Строка 32: Панель ввода API-ключа */
             border: 1px solid #004400;
-            /* Строка 33: Тёмно-зелёная рамка */
             padding: 12px 15px;
-            /* Строка 34: Отступ 12px вертикально, 15px горизонтально */
             margin-bottom: 15px;
-            /* Строка 35: 15px отступ снизу */
             background: #020a02;
-            /* Строка 36: Очень тёмный зеленоватый фон */
             display: flex;
-            /* Строка 37: Элементы в ряд */
             align-items: center;
-            /* Строка 38: Выравнивание по центру строки */
             gap: 10px;
-            /* Строка 39: 10px между дочерними элементами */
             flex-wrap: wrap;
-            /* Строка 40: Перенос на следующую строку если не помещается */
         }
-        #apiPanel label {
-        /* Строка 41: Подпись "GROQ API KEY:" */
-            font-size: 0.8em;
-            /* Строка 42: Шрифт 0.8 от родительского */
-            color: #00aa33;
-            /* Строка 43: Средне-зелёный */
-            white-space: nowrap;
-            /* Строка 44: Не переносится на новую строку */
-        }
+        #apiPanel label { font-size: 0.8em; color: #00aa33; white-space: nowrap; }
         #apiKeyInput {
-        /* Строка 45: Поле ввода ключа */
             flex-grow: 1;
-            /* Строка 46: Занимает всё свободное место в строке */
             background: black;
-            /* Строка 47: Чёрный фон */
             border: 1px solid #006600;
-            /* Строка 48: Тёмно-зелёная рамка */
             color: #00ff41;
-            /* Строка 49: Зелёный текст */
             padding: 7px 10px;
-            /* Строка 50: Отступы внутри поля */
             font-family: inherit;
-            /* Строка 51: Наследует Courier New */
             font-size: 0.85em;
-            /* Строка 52: Чуть мельче основного */
             outline: none;
-            /* Строка 53: Убирает синюю обводку браузера при фокусе */
             min-width: 200px;
-            /* Строка 54: Не сжимается меньше 200px */
         }
         #apiKeyInput::placeholder { color: #004400; }
-        /* Строка 55: Placeholder — тёмно-зелёный, едва виден */
         #apiStatus { font-size: 0.8em; white-space: nowrap; }
-        /* Строка 56: Статус ключа — мелкий, не переносится */
         #apiStatus.ok  { color: #00ff41; }
-        /* Строка 57: .ok — зелёный (ключ сохранён) */
         #apiStatus.err { color: #ff4444; }
-        /* Строка 58: .err — красный (ключ не задан) */
-
         #cameras-row {
-        /* Строка 59: Строка с двумя камерами */
             display: flex;
-            /* Строка 60: Камеры рядом в ряд */
             gap: 12px;
-            /* Строка 61: 12px между блоками камер */
             margin-bottom: 12px;
-            /* Строка 62: 12px отступ снизу */
         }
         .cam-block {
-        /* Строка 63: Блок одной камеры */
             flex: 1;
-            /* Строка 64: Каждый занимает половину ширины */
             display: flex;
-            /* Строка 65: Flex внутри блока */
             flex-direction: column;
-            /* Строка 66: Вертикально: подпись сверху, видео снизу */
         }
         .cam-label {
-        /* Строка 67: Подпись над камерой */
             text-align: center;
-            /* Строка 68: По центру */
             font-size: 0.75em;
-            /* Строка 69: Мелкий шрифт */
             letter-spacing: 3px;
-            /* Строка 70: Разреженные буквы */
             color: #00aa33;
-            /* Строка 71: Средне-зелёный */
             margin-bottom: 4px;
-            /* Строка 72: 4px отступ между подписью и видео */
         }
-
         #camera {
-        /* Строка 73: Элемент <video> для веб-камеры */
             width: 100%;
-            /* Строка 74: Полная ширина блока */
             height: 200px;
-            /* Строка 75: Фиксированная высота 200px */
             object-fit: cover;
-            /* Строка 76: Заполняет блок без чёрных полос, обрезая лишнее */
             border: 2px solid #00ff41;
-            /* Строка 77: Зелёная рамка 2px */
             display: block;
-            /* Строка 78: Блочный — убирает пространство снизу (baseline gap) */
             filter: grayscale(30%);
-            /* Строка 79: 30% чёрно-белый фильтр — эффект старого монитора */
             background: #050505;
-            /* Строка 80: Почти чёрный фон пока камера не включена */
         }
-
         #espCamImg {
-        /* Строка 81: <img> для кадра ESP-CAM из Firebase */
             width: 100%;
-            /* Строка 82: Полная ширина */
             height: 200px;
-            /* Строка 83: Та же высота что у веб-камеры */
             object-fit: cover;
-            /* Строка 84: Без чёрных полос */
             border: 2px solid #00ff41;
-            /* Строка 85: Зелёная рамка */
             display: block;
-            /* Строка 86: Блочный */
             filter: grayscale(30%);
-            /* Строка 87: Тот же фильтр */
             background: #050505;
-            /* Строка 88: Тёмный фон пока нет кадра */
         }
-
         #espPlaceholder {
-        /* Строка 89: Заглушка пока ESP-CAM не подключена */
             width: 100%;
-            /* Строка 90: Полная ширина */
             height: 200px;
-            /* Строка 91: Высота 200px */
             border: 2px solid #004400;
-            /* Строка 92: Тёмно-зелёная рамка (тусклее активной камеры) */
             display: flex;
-            /* Строка 93: Flex для центрирования текста */
             align-items: center;
-            /* Строка 94: Текст по центру вертикально */
             justify-content: center;
-            /* Строка 95: Текст по центру горизонтально */
             background: #050505;
-            /* Строка 96: Почти чёрный фон */
             color: #004400;
-            /* Строка 97: Тёмно-зелёный текст — почти не виден (намеренно) */
             font-size: 0.85em;
-            /* Строка 98: Мелкий шрифт */
             letter-spacing: 2px;
-            /* Строка 99: Разреженные буквы */
         }
-
         #cam-controls {
-        /* Строка 100: Строка кнопок управления камерами */
             display: flex;
-            /* Строка 101: Кнопки в ряд */
             gap: 10px;
-            /* Строка 102: 10px между группами */
             margin-bottom: 15px;
-            /* Строка 103: 15px отступ снизу */
             align-items: flex-end;
-            /* Строка 104: По нижнему краю (если кнопки разной высоты) */
         }
         .cam-btn-group {
-        /* Строка 105: Группа кнопок одной камеры */
             flex: 1;
-            /* Строка 106: Равная доля ширины */
             display: flex;
-            /* Строка 107: Flex внутри */
             flex-direction: column;
-            /* Строка 108: Кнопки вертикально */
             gap: 6px;
-            /* Строка 109: 6px между кнопками */
         }
-
         #aiAnswer {
-        /* Строка 110: Блок вывода ответа AI */
             height: 180px;
-            /* Строка 111: Фиксированная высота 180px */
             overflow-y: auto;
-            /* Строка 112: Прокрутка если текст не помещается */
             border: 1px solid #004400;
-            /* Строка 113: Тёмно-зелёная рамка */
             padding: 15px;
-            /* Строка 114: Отступ 15px внутри */
             margin: 15px 0;
-            /* Строка 115: 15px сверху и снизу */
             background: #050505;
-            /* Строка 116: Почти чёрный фон */
             line-height: 1.6;
-            /* Строка 117: Межстрочный интервал 1.6 — удобно читать */
             white-space: pre-wrap;
-            /* Строка 118: Сохраняет переносы строк из ответа AI */
         }
-
         .input-group { display: flex; gap: 10px; }
-        /* Строка 119: Строка ввода — flex, 10px между элементами */
-
         input[type="text"], input[type="password"] {
-        /* Строка 120: Стили для текстовых полей и полей пароля */
             flex-grow: 1;
-            /* Строка 121: Занимает всё свободное место */
             background: black;
-            /* Строка 122: Чёрный фон */
             border: 1px solid #00ff41;
-            /* Строка 123: Зелёная рамка */
             color: #00ff41;
-            /* Строка 124: Зелёный текст */
             padding: 10px;
-            /* Строка 125: Отступ 10px */
             font-family: inherit;
-            /* Строка 126: Наследует Courier New */
             outline: none;
-            /* Строка 127: Убирает синюю обводку при фокусе */
             font-size: 1em;
-            /* Строка 128: Основной размер шрифта */
         }
-
         button {
-        /* Строка 129: Стили для ВСЕХ кнопок */
             background: #002200;
-            /* Строка 130: Очень тёмно-зелёный фон */
             color: #00ff41;
-            /* Строка 131: Ярко-зелёный текст */
             border: 1px solid #00ff41;
-            /* Строка 132: Зелёная рамка */
             padding: 10px 20px;
-            /* Строка 133: Отступ 10px вертикально, 20px горизонтально */
             cursor: pointer;
-            /* Строка 134: Курсор-рука — показывает что кнопка кликабельна */
             font-weight: bold;
-            /* Строка 135: Жирный текст */
             font-family: inherit;
-            /* Строка 136: Наследует Courier New */
             transition: background 0.15s, color 0.15s;
-            /* Строка 137: Плавная анимация фона и цвета за 0.15 сек при hover */
             white-space: nowrap;
-            /* Строка 138: Текст не переносится */
         }
         button:hover    { background: #00ff41; color: black; }
-        /* Строка 139: При наведении — инверсия: зелёный фон, чёрный текст */
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        /* Строка 140: Неактивная кнопка — 50% прозрачная, курсор "запрещено" */
-
         #statusBar {
-        /* Строка 141: Строка статуса вверху терминала */
             display: flex;
-            /* Строка 142: Flex — элементы в ряд */
             justify-content: space-between;
-            /* Строка 143: Первый слева, последний справа, максимум пространства между */
             font-size: 0.8em;
-            /* Строка 144: Мелкий шрифт */
             margin-bottom: 15px;
-            /* Строка 145: 15px отступ снизу */
         }
-
         #micBtn.listening {
-        /* Строка 146: Кнопка микрофона ТОЛЬКО с классом .listening (во время записи) */
             background: #440000;
-            /* Строка 147: Тёмно-красный фон */
             border-color: #ff0000;
-            /* Строка 148: Ярко-красная рамка */
             color: #ff4444;
-            /* Строка 149: Красный текст */
             animation: pulse 1s infinite;
-            /* Строка 150: Анимация "pulse", 1 сек, бесконечно */
         }
-
         @keyframes pulse {
-        /* Строка 151: Объявление анимации "pulse" */
             0%, 100% { opacity: 1; }
-            /* Строка 152: Начало и конец — полностью непрозрачная */
             50%       { opacity: 0.5; }
-            /* Строка 153: Середина — 50% прозрачности → эффект мигания */
         }
-
         .dot {
-        /* Строка 154: Светодиодный индикатор статуса ESP-CAM */
             display: inline-block;
-            /* Строка 155: Стоит в строке, но принимает width/height */
             width: 8px; height: 8px;
-            /* Строка 156: Размер 8×8px */
             border-radius: 50%;
-            /* Строка 157: 50% радиус — квадрат становится кругом */
             margin-left: 5px;
-            /* Строка 158: 5px отступ слева от текста */
             vertical-align: middle;
-            /* Строка 159: Выравнивание по центру строки текста */
         }
         .dot.on  { background: #00ff41; box-shadow: 0 0 6px #00ff41; }
-        /* Строка 160: .on — зелёный + зелёное свечение (онлайн) */
         .dot.off { background: #440000; }
-        /* Строка 161: .off — тёмно-красный (офлайн) */
     </style>
-    <!-- Строка 162: Закрытие блока CSS -->
 </head>
-<!-- Строка 163: Закрытие HEAD -->
 <body>
-<!-- Строка 164: Открытие body — всё здесь видит пользователь -->
 <div id="terminal">
-<!-- Строка 165: Главный контейнер терминала -->
 
     <div id="statusBar">
-    <!-- Строка 166: Строка статуса — слева SYSTEM, справа часы -->
         <span id="sysStatus">SYSTEM: ONLINE</span>
-        <!-- Строка 167: JS меняет на "PROCESSING" во время запроса к AI -->
         <span id="clock"></span>
-        <!-- Строка 168: Пустой span — JS вставляет сюда время каждую секунду -->
     </div>
 
     <h2>FAZBEAR SECURITY AI</h2>
-    <!-- Строка 169: Заголовок с letter-spacing=8px -->
 
     <div id="apiPanel">
-    <!-- Строка 170: Панель Groq API-ключа -->
         <label>GROQ API KEY:</label>
-        <!-- Строка 171: Подпись поля -->
         <input type="password" id="apiKeyInput" placeholder="gsk_...">
-        <!-- Строка 172: type="password" — скрывает символы точками -->
         <button id="apiSaveBtn">שמור</button>
-        <!-- Строка 173: "Сохранить" — JS пишет ключ в localStorage -->
         <button id="apiClearBtn">מחק</button>
-        <!-- Строка 174: "Удалить" — JS стирает ключ из localStorage -->
         <span id="apiStatus" class="err">[ לא מוגדר ]</span>
-        <!-- Строка 175: Статус — class="err" красный по умолчанию, JS меняет на "ok" -->
     </div>
 
     <div id="cameras-row">
-    <!-- Строка 176: Контейнер двух камер рядом -->
-
         <div class="cam-block">
-        <!-- Строка 177: Блок первой камеры -->
             <div class="cam-label">[ CAM-01 / MAIN ENTRANCE ]</div>
-            <!-- Строка 178: Подпись камеры 1 -->
             <video id="camera" autoplay muted playsinline></video>
-            <!-- Строка 179: autoplay=сразу играть, muted=без звука, playsinline=не на весь экран iOS -->
         </div>
 
         <div class="cam-block">
-        <!-- Строка 180: Блок ESP-CAM -->
             <div class="cam-label">
-            <!-- Строка 181: Подпись с индикатором -->
-                [ CAM-02 / ESP-CAM — FIREBASE ]
-                <!-- Строка 182: Текст подписи -->
+                [ CAM-02 / ESP-CAM — LIVE ]
                 <span id="espDot" class="dot off"></span>
-                <!-- Строка 183: class="dot off" = тёмно-красный. JS меняет на "on" при подключении -->
             </div>
-            <div id="espPlaceholder">[ ממתין ל-FIREBASE... ]</div>
-            <!-- Строка 184: Заглушка — JS скрывает при первом кадре от ESP-CAM -->
+            <div id="espPlaceholder">[ ממתין לחיבור... ]</div>
+            <!-- ← img עם src ריק. JS ישים כאן את ה-Cloudflare stream URL -->
             <img id="espCamImg" src="" alt="ESP-CAM" style="display:none;">
-            <!-- Строка 185: Скрыт. JS подставляет base64-кадр и показывает -->
         </div>
     </div>
 
     <div id="cam-controls">
-    <!-- Строка 186: Кнопки управления камерами -->
         <div class="cam-btn-group">
-        <!-- Строка 187: Группа для камеры 1 -->
             <button id="camBtn">הפעל מצלמה</button>
-            <!-- Строка 188: "Включить камеру" — JS вызывает getUserMedia() -->
         </div>
         <div class="cam-btn-group">
-        <!-- Строка 189: Группа для ESP-CAM -->
             <button id="espBtn">הפעל ESP-CAM</button>
-            <!-- Строка 190: "Включить ESP-CAM" — JS подписывается на Firebase -->
         </div>
     </div>
 
     <div id="aiAnswer">מערכת מוכנה... [Awaiting Input]</div>
-    <!-- Строка 191: Блок ответов AI — JS перезаписывает textContent -->
 
     <div class="input-group">
-    <!-- Строка 192: Строка ввода — поле + кнопки в ряд -->
         <input type="text" id="userInput" placeholder="הכנס פקודה...">
-        <!-- Строка 193: Пользователь пишет команду сюда -->
         <button id="sendBtn">שלח</button>
-        <!-- Строка 194: "Отправить" — JS берёт текст и вызывает askAI() -->
         <button id="micBtn">🎤 מיקרופון</button>
-        <!-- Строка 195: "Микрофон" — JS запускает SpeechRecognition -->
     </div>
 
     <div id="voiceText" style="font-size:0.8em; color:#00661a; margin-top:8px; min-height:1.2em;"></div>
-    <!-- Строка 196: Показывает распознанный голосовой текст. min-height чтобы не прыгал layout -->
 
 </div>
-<!-- Строка 197: Закрытие #terminal -->
 
 <script type="module">
-// Строка 198: type="module" = ES Module. В JS комментарии ТОЛЬКО через // или /* */
 
-    // Строка 199: Импорт initializeApp из Firebase SDK v10 (CDN Google)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-    // Строка 200: getDatabase=объект БД, ref=ссылка на узел, push=добавить запись, onValue=слушать изменения
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    // ← הוספנו get לצד onValue — כדי לקרוא את ה-URL של Cloudflare מ-Firebase
+    import { getDatabase, ref, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Строка 201: Имя ключа в localStorage — по нему сохраняем/читаем API-ключ
     const LS_KEY      = "fazbear_groq_key";
-
-    // Строка 202: Ссылка на поле ввода ключа в DOM
     const apiKeyInput = document.getElementById('apiKeyInput');
-
-    // Строка 203: Ссылка на span статуса ключа
     const apiStatus   = document.getElementById('apiStatus');
 
-    // Строка 204: Функция — читает API-ключ из localStorage
-    function getApiKey() {
-        return localStorage.getItem(LS_KEY) || ""; // Строка 205: || "" — если нет ключа, вернуть пустую строку
-    }
+    function getApiKey() { return localStorage.getItem(LS_KEY) || ""; }
 
-    // Строка 206: Функция — обновляет зелёный/красный индикатор статуса ключа
     function updateApiStatus() {
-        const key = getApiKey(); // Строка 207: Читаем ключ из localStorage
-        if (key && key.startsWith("gsk_")) { // Строка 208: Ключ есть И начинается с "gsk_" (формат Groq)
-            apiStatus.textContent   = "[ ✓ מפתח שמור ]"; // Строка 209: Текст "ключ сохранён"
-            apiStatus.className     = "ok";               // Строка 210: Класс "ok" → CSS делает текст зелёным
-            apiKeyInput.placeholder = "gsk_••••••••••••"; // Строка 211: Показываем что ключ уже есть
-        } else { // Строка 212: Ключа нет или неверный формат
-            apiStatus.textContent = "[ לא מוגדר ]"; // Строка 213: "Не определён"
-            apiStatus.className   = "err";           // Строка 214: Класс "err" → CSS делает текст красным
+        const key = getApiKey();
+        if (key && key.startsWith("gsk_")) {
+            apiStatus.textContent   = "[ ✓ מפתח שמור ]";
+            apiStatus.className     = "ok";
+            apiKeyInput.placeholder = "gsk_••••••••••••";
+        } else {
+            apiStatus.textContent = "[ לא מוגדר ]";
+            apiStatus.className   = "err";
         }
     }
+    updateApiStatus();
 
-    updateApiStatus(); // Строка 215: Проверяем статус сразу при загрузке страницы
-
-    // Строка 216: Обработчик кнопки "Сохранить"
     document.getElementById('apiSaveBtn').addEventListener('click', () => {
-        const val = apiKeyInput.value.trim(); // Строка 217: Читаем поле, .trim() убирает пробелы
-        if (!val.startsWith("gsk_")) { // Строка 218: Не начинается с "gsk_" — не Groq ключ
-            apiStatus.textContent = "[ ✗ מפתח לא תקין — חייב להתחיל ב-gsk_ ]"; // Строка 219: Ошибка
-            apiStatus.className   = "err"; // Строка 220: Красный
-            return; // Строка 221: Выходим — не сохраняем неверный ключ
+        const val = apiKeyInput.value.trim();
+        if (!val.startsWith("gsk_")) {
+            apiStatus.textContent = "[ ✗ מפתח לא תקין — חייב להתחיל ב-gsk_ ]";
+            apiStatus.className   = "err";
+            return;
         }
-        localStorage.setItem(LS_KEY, val); // Строка 222: Сохраняем в localStorage (хранится между сессиями)
-        apiKeyInput.value = "";            // Строка 223: Очищаем поле
-        updateApiStatus();                 // Строка 224: Показываем зелёный "✓"
+        localStorage.setItem(LS_KEY, val);
+        apiKeyInput.value = "";
+        updateApiStatus();
     });
 
-    // Строка 225: Обработчик кнопки "Удалить"
     document.getElementById('apiClearBtn').addEventListener('click', () => {
-        localStorage.removeItem(LS_KEY); // Строка 226: Удаляем ключ из localStorage
-        apiKeyInput.value = "";          // Строка 227: Очищаем поле
-        updateApiStatus();               // Строка 228: Показываем красный "не определён"
+        localStorage.removeItem(LS_KEY);
+        apiKeyInput.value = "";
+        updateApiStatus();
     });
 
-    // Строка 229: Конфигурация Firebase — параметры из Firebase Console
     const firebaseConfig = {
-        apiKey:            "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs", // Строка 230: API-ключ Firebase (не Groq!)
-        authDomain:        "project-shalty.firebaseapp.com",            // Строка 231: Домен аутентификации
-        databaseURL:       "https://project-shalty-default-rtdb.firebaseio.com", // Строка 232: URL Realtime DB
-        projectId:         "project-shalty",                            // Строка 233: ID проекта
-        storageBucket:     "project-shalty.firebasestorage.app",       // Строка 234: Хранилище файлов
-        messagingSenderId: "984471122116",                              // Строка 235: ID для Push-уведомлений
-        appId:             "1:984471122116:web:8f958b467378fd19475991" // Строка 236: ID приложения
+        apiKey:            "AIzaSyDg7b8jru0rOx2EGfeSoewcu1wHAFynSHs",
+        authDomain:        "project-shalty.firebaseapp.com",
+        databaseURL:       "https://project-shalty-default-rtdb.firebaseio.com",
+        projectId:         "project-shalty",
+        storageBucket:     "project-shalty.firebasestorage.app",
+        messagingSenderId: "984471122116",
+        appId:             "1:984471122116:web:8f958b467378fd19475991"
     };
 
-    const app = initializeApp(firebaseConfig); // Строка 237: Инициализируем Firebase с нашим конфигом
-    const db  = getDatabase(app);              // Строка 238: Получаем объект Realtime Database
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
 
-    const answerBox = document.getElementById('aiAnswer');  // Строка 239: Блок вывода ответов AI
-    const userInput = document.getElementById('userInput'); // Строка 240: Поле ввода команды
-    const sendBtn   = document.getElementById('sendBtn');   // Строка 241: Кнопка "Отправить"
-    const micBtn    = document.getElementById('micBtn');    // Строка 242: Кнопка микрофона
-    const voiceText = document.getElementById('voiceText'); // Строка 243: Строка голосового ввода
-    const sysStatus = document.getElementById('sysStatus'); // Строка 244: "SYSTEM: ONLINE"
+    const answerBox = document.getElementById('aiAnswer');
+    const userInput = document.getElementById('userInput');
+    const sendBtn   = document.getElementById('sendBtn');
+    const micBtn    = document.getElementById('micBtn');
+    const voiceText = document.getElementById('voiceText');
+    const sysStatus = document.getElementById('sysStatus');
 
-    let espListening   = false; // Строка 245: Флаг — слушаем ли Firebase (false = выключено)
-    let espUnsubscribe = null;  // Строка 246: Функция отписки от onValue (null = не подписаны)
+    let espListening   = false;
+    let espUnsubscribe = null;
 
-    // Строка 247: Обработчик кнопки ESP-CAM
-    document.getElementById('espBtn').addEventListener('click', () => {
-        const espBtn      = document.getElementById('espBtn');      // Строка 248: Сама кнопка (для смены текста)
-        const img         = document.getElementById('espCamImg');   // Строка 249: img для кадра
-        const placeholder = document.getElementById('espPlaceholder'); // Строка 250: Заглушка
-        const dot         = document.getElementById('espDot');      // Строка 251: Светодиод
+    // ─── ESP-CAM ─────────────────────────────────────────────────
+    // שינוי מרכזי: במקום base64 מ-Firebase — קורא את ה-Cloudflare URL
+    // ומציג סטרים MJPEG ישיר דרך HTTPS (אין Mixed Content!)
+    document.getElementById('espBtn').addEventListener('click', async () => {
+        const espBtn      = document.getElementById('espBtn');
+        const img         = document.getElementById('espCamImg');
+        const placeholder = document.getElementById('espPlaceholder');
+        const dot         = document.getElementById('espDot');
 
-        if (!espListening) { // Строка 252: Не слушаем — нужно ВКЛЮЧИТЬ
-            espListening            = true;                          // Строка 253: Ставим флаг
-            espBtn.textContent      = "כבה ESP-CAM";                // Строка 254: Меняем текст кнопки
-            placeholder.textContent = "[ מחכה לפריים ראשון... ]";  // Строка 255: Сообщение ожидания
+        if (!espListening) {
+            espListening       = true;
+            espBtn.textContent = "כבה ESP-CAM";
+            placeholder.textContent = "[ טוען סטרים... ]";
 
-            const cameraRef = ref(db, 'camera'); // Строка 256: Ссылка על узел /camera в Realtime DB
+            // ← קורא את ה-Cloudflare stream URL מ-Firebase
+            // ESP-CAM כותב אותו ל-/camera/stream_url בכל הפעלה
+            try {
+                const snap = await get(ref(db, "/camera/stream_url"));
+                const streamUrl = snap.val();
 
-            // Строка 257: onValue — подписываемся. Вызывается при КАЖДОМ изменении узла /camera
-            // Возвращает функцию отписки — сохраняем в espUnsubscribe
-            espUnsubscribe = onValue(cameraRef, (snapshot) => {
-                const data = snapshot.val();          // Строка 258: .val() — читаем данные (объект или null)
-                if (!data || !data.frame) return;     // Строка 259: Нет кадра — ждём следующий
+                if (!streamUrl) {
+                    // אין URL — fallback ל-base64 מ-Firebase
+                    console.warn("[CAM] אין stream_url — עובר ל-Firebase base64");
+                    espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (!data || !data.frame) return;
+                        img.src                   = "data:image/jpeg;base64," + data.frame;
+                        img.style.display         = "block";
+                        placeholder.style.display = "none";
+                        dot.classList.replace('off', 'on');
+                    });
+                    return;
+                }
 
-                img.src                   = "data:image/jpeg;base64," + data.frame; // Строка 260: Подставляем base64-JPEG
-                img.style.display         = "block"; // Строка 261: Показываем img
-                placeholder.style.display = "none";  // Строка 262: Скрываем заглушку
-                dot.classList.replace('off', 'on');  // Строка 263: Светодиод: "off"→"on" → зелёный
-            }, (error) => { // Строка 264: Второй аргумент onValue — обработчик ошибок
-                console.error("Firebase ESP-CAM error:", error); // Строка 265: В консоль F12
-                placeholder.textContent = "[ שגיאת Firebase ]";  // Строка 266: Показываем ошибку
-            });
+                // ← יש URL — מציג סטרים MJPEG ישיר (חלק ומהיר!)
+                console.log("[CAM] סטרים:", streamUrl);
+                img.src                   = streamUrl;
+                img.style.display         = "block";
+                placeholder.style.display = "none";
+                dot.classList.replace('off', 'on');
 
-        } else { // Строка 267: Слушаем — нужно ВЫКЛЮЧИТЬ
-            if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; } // Строка 268: Отписываемся от Firebase
-            espListening              = false;            // Строка 269: Сбрасываем флаг
-            img.src                   = "";              // Строка 270: Очищаем src
-            img.style.display         = "none";          // Строка 271: Скрываем img
-            placeholder.style.display = "flex";          // Строка 272: Показываем заглушку (flex для центрирования)
-            placeholder.textContent   = "[ NO SIGNAL ]"; // Строка 273: Текст заглушки
-            dot.classList.replace('on', 'off');           // Строка 274: Светодиод: "on"→"off" → тёмно-красный
-            espBtn.textContent        = "הפעל ESP-CAM";  // Строка 275: Возвращаем исходный текст кнопки
+                // אם הסטרים נכשל — fallback ל-Firebase base64
+                img.onerror = () => {
+                    console.warn("[CAM] סטרים נכשל — fallback ל-Firebase base64");
+                    img.onerror = null;
+                    espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (!data || !data.frame) return;
+                        img.src                   = "data:image/jpeg;base64," + data.frame;
+                        img.style.display         = "block";
+                        placeholder.style.display = "none";
+                        dot.classList.replace('off', 'on');
+                    });
+                };
+
+            } catch(e) {
+                placeholder.textContent = "[ שגיאת Firebase: " + e.message + " ]";
+            }
+
+        } else {
+            // כיבוי
+            if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; }
+            espListening              = false;
+            img.src                   = "";
+            img.style.display         = "none";
+            placeholder.style.display = "flex";
+            placeholder.textContent   = "[ NO SIGNAL ]";
+            dot.classList.replace('on', 'off');
+            espBtn.textContent        = "הפעל ESP-CAM";
         }
     });
 
-    // Строка 276: async функция — внутри можно await для ожидания ответа сервера
     async function askAI(text) {
-        if (!text.trim()) return; // Строка 277: Пустой текст — выходим
+        if (!text.trim()) return;
+        const key = getApiKey();
+        if (!key) { answerBox.textContent = "[ERROR]: הכנס Groq API Key בשדה למעלה ולחץ שמור"; return; }
 
-        const key = getApiKey(); // Строка 278: Читаем ключ из localStorage
-        if (!key) { // Строка 279: Ключа нет
-            answerBox.textContent = "[ERROR]: הכנס Groq API Key בשדה למעלה ולחץ שמור"; // Строка 280: Инструкция
-            return; // Строка 281: Выходим
-        }
+        sendBtn.disabled      = true;
+        micBtn.disabled       = true;
+        answerBox.textContent = "מנתח... [SCANNING]";
+        sysStatus.textContent = "SYSTEM: PROCESSING";
 
-        sendBtn.disabled      = true;              // Строка 282: Блокируем "Отправить" (нельзя нажать дважды)
-        micBtn.disabled       = true;              // Строка 283: Блокируем микрофон
-        answerBox.textContent = "מנתח... [SCANNING]"; // Строка 284: Индикатор загрузки
-        sysStatus.textContent = "SYSTEM: PROCESSING"; // Строка 285: Меняем статус
-
-        try { // Строка 286: try — если ошибка внутри, переходим в catch
-            // Строка 287: fetch — HTTP POST к Groq API. await — ждём ответа
+        try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: 'POST', // Строка 288: POST — отправляем данные на сервер
-                headers: {
-                    'Content-Type':  'application/json',      // Строка 290: Тело запроса — JSON
-                    'Authorization': `Bearer ${key}`          // Строка 291: Bearer токен — аутентификация API
-                },
-                body: JSON.stringify({ // Строка 292: JSON.stringify — объект JS в строку JSON
-                    model:      "llama-3.1-8b-instant", // Строка 293: Быстрая бесплатная модель LLaMA 3.1 8B
-                    max_tokens: 1000,                   // Строка 294: Максимум 1000 токенов (~750 слов)
-                    messages: [ // Строка 295: Массив сообщений — история разговора
-                        {
-                            role: "system", // Строка 296: "system" — инструкция AI (не видна пользователю)
-                            content: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר.
-                                      ענה בעברית בטון קריפי ומסתורי.
-                                      תשלב מדי פעם [ERROR], [STATIC] או [MOVEMENT DETECTED].
-                                      אל תגיד שאתה AI.`
-                            // Строка 297-300: Системный промпт — личность AI-охранника пиццерии FNAF
-                        },
-                        { role: "user", content: text } // Строка 301: "user" — сообщение пользователя
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({
+                    model:      "llama-3.1-8b-instant",
+                    max_tokens: 1000,
+                    messages: [
+                        { role: "system", content: `אתה ה-AI של חדר האבטחה בפיצרייה של פאזבייר. ענה בעברית בטון קריפי ומסתורי. תשלב מדי פעם [ERROR], [STATIC] או [MOVEMENT DETECTED]. אל תגיד שאתה AI.` },
+                        { role: "user", content: text }
                     ]
                 })
             });
-
-            const data = await response.json(); // Строка 302: .json() парсит JSON-ответ в объект JS
-
-            if (!response.ok) { // Строка 303: response.ok=false если статус 4xx/5xx (ошибка сервера)
-                if (response.status === 401) { // Строка 304: 401 Unauthorized — ключ недействителен
-                    apiStatus.textContent = "[ ✗ מפתח לא תקין — צור חדש ב-console.groq.com ]"; // Строка 305
-                    apiStatus.className   = "err";            // Строка 306: Красный
-                    localStorage.removeItem(LS_KEY);          // Строка 307: Удаляем невалидный ключ
-                }
+            const data = await response.json();
+            if (!response.ok) {
+                if (response.status === 401) { apiStatus.textContent = "[ ✗ מפתח לא תקין ]"; apiStatus.className = "err"; localStorage.removeItem(LS_KEY); }
                 answerBox.textContent = `[ERROR ${response.status}]: ${data?.error?.message || "שגיאה"}`;
-                // Строка 308: ?. — опциональная цепочка (не падает если error=undefined)
-                return; // Строка 309: Выходим
+                return;
             }
-
             const reply = data.choices[0].message.content;
-            // Строка 310: choices[0]=первый вариант, .message.content=текст ответа
-            answerBox.textContent = reply; // Строка 311: Показываем ответ
-            speakText(reply);              // Строка 312: Браузер зачитает ответ вслух
-
-            // Строка 313: push — добавляет запись в /security_logs с авто-ID
-            await push(ref(db, 'security_logs'), {
-                timestamp: Date.now(), // Строка 314: Unix-время в мс — для сортировки
-                prompt:    text,       // Строка 315: Вопрос пользователя
-                response:  reply       // Строка 316: Ответ AI
-            });
-
-        } catch (err) { // Строка 317: Сетевая ошибка (нет интернета, CORS и т.д.)
-            answerBox.textContent = `[NETWORK ERROR]: ${err.message}`; // Строка 318: err.message — стандартное свойство Error
-        } finally { // Строка 319: finally — выполняется ВСЕГДА (и при успехе, и при ошибке)
-            sendBtn.disabled      = false;          // Строка 320: Разблокируем "Отправить"
-            micBtn.disabled       = false;          // Строка 321: Разблокируем микрофон
-            sysStatus.textContent = "SYSTEM: ONLINE"; // Строка 322: Возвращаем статус
+            answerBox.textContent = reply;
+            speakText(reply);
+            await push(ref(db, 'security_logs'), { timestamp: Date.now(), prompt: text, response: reply });
+        } catch (err) {
+            answerBox.textContent = `[NETWORK ERROR]: ${err.message}`;
+        } finally {
+            sendBtn.disabled      = false;
+            micBtn.disabled       = false;
+            sysStatus.textContent = "SYSTEM: ONLINE";
         }
     }
 
-    // Строка 323: Клик по кнопке "Отправить"
-    sendBtn.addEventListener('click', () => {
-        const text = userInput.value.trim(); // Строка 324: Читаем поле, убираем пробелы
-        if (text) { askAI(text); userInput.value = ""; } // Строка 325: Отправляем и очищаем поле
-    });
+    sendBtn.addEventListener('click', () => { const t = userInput.value.trim(); if (t) { askAI(t); userInput.value = ""; } });
+    userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const t = userInput.value.trim(); if (t) { askAI(t); userInput.value = ""; } } });
 
-    // Строка 326: Нажатие клавиши в поле ввода
-    userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { // Строка 327: Только если Enter
-            const text = userInput.value.trim(); // Строка 328: Читаем текст
-            if (text) { askAI(text); userInput.value = ""; } // Строка 329: То же что кнопка "Отправить"
-        }
-    });
-
-    let camStream = null; // Строка 330: MediaStream камеры (null = выключена)
-
-    // Строка 331: Кнопка веб-камеры. async нужен для await
+    let camStream = null;
     document.getElementById('camBtn').addEventListener('click', async () => {
-        const cam    = document.getElementById('camera'); // Строка 332: video-элемент
-        const camBtn = document.getElementById('camBtn'); // Строка 333: Сама кнопка
-
-        if (!camStream) { // Строка 334: Потока нет — ВКЛЮЧАЕМ
-            try { // Строка 335: try — пользователь может запретить доступ
+        const cam    = document.getElementById('camera');
+        const camBtn = document.getElementById('camBtn');
+        if (!camStream) {
+            try {
                 camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                // Строка 336: Запрашиваем видеопоток. Браузер показывает диалог разрешения.
-                // video:true=нужно видео, audio:false=звук не нужен
-                cam.srcObject = camStream; // Строка 337: Привязываем поток к video-элементу
-                await cam.play();          // Строка 338: Запускаем воспроизведение явно
-                camBtn.textContent = 'כבה מצלמה'; // Строка 339: "Выключить камеру"
-            } catch (err) { // Строка 340: Пользователь запретил или камера занята
-                alert("שגיאת מצלמה: " + err.message); // Строка 341: Всплывающее окно с ошибкой
-            }
-        } else { // Строка 342: Поток есть — ВЫКЛЮЧАЕМ
+                cam.srcObject = camStream;
+                await cam.play();
+                camBtn.textContent = 'כבה מצלמה';
+            } catch (err) { alert("שגיאת מצלמה: " + err.message); }
+        } else {
             camStream.getTracks().forEach(t => t.stop());
-            // Строка 343: getTracks()=все треки, stop() каждый. Без этого индикатор камеры не погаснет!
-            cam.srcObject      = null;           // Строка 344: Отвязываем поток — экран гаснет
-            camStream          = null;           // Строка 345: Сбрасываем переменную
-            camBtn.textContent = 'הפעל מצלמה'; // Строка 346: Возвращаем "Включить камеру"
+            cam.srcObject = null; camStream = null;
+            camBtn.textContent = 'הפעל מצלמה';
         }
     });
 
-    // Строка 347: Chrome=SpeechRecognition, Safari=webkitSpeechRecognition. || берём что поддерживается
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRec) { // Строка 348: Браузер не поддерживает (Firefox Desktop)
-        micBtn.textContent = "🎤 לא נתמך"; // Строка 349: "Не поддерживается"
-        micBtn.disabled    = true;          // Строка 350: Кнопка неактивна
-    } else { // Строка 351: Поддерживает — настраиваем
-        const recognition          = new SpeechRec(); // Строка 352: Объект распознавания речи
-        recognition.lang           = 'he-IL';         // Строка 353: Язык: иврит (Израиль)
-        recognition.continuous     = false;           // Строка 354: false = одна фраза, не непрерывный режим
-        recognition.interimResults = false;           // Строка 355: false = только финальные результаты
-        let isListening = false; // Строка 356: Флаг — идёт ли запись
-
-        // Строка 357: Клик по кнопке микрофона
-        micBtn.addEventListener('click', () => {
-            if (isListening) { recognition.stop(); return; } // Строка 358: Уже слушаем — стоп
-            voiceText.textContent = "מאזין..."; // Строка 359: Индикатор "Слушаю..."
-            recognition.start(); // Строка 360: Начинаем запись
-        });
-
-        // Строка 361: Микрофон начал работу
-        recognition.onstart = () => {
-            isListening = true; // Строка 362: Ставим флаг
-            micBtn.classList.add('listening'); // Строка 363: CSS включает мигающую красную анимацию
-            micBtn.textContent = "⏹ עצור";    // Строка 364: Кнопка становится "Стоп"
-        };
-
-        // Строка 365: Получен результат распознавания
-        recognition.onresult = (e) => {
-            const t = e.results[0][0].transcript;
-            // Строка 366: results[0]=первый результат, [0]=наиболее вероятный, .transcript=текст
-            voiceText.textContent = "קלט קולי: " + t; // Строка 367: Показываем распознанный текст
-            userInput.value = t;                        // Строка 368: Вставляем в поле ввода
-            askAI(t);                                   // Строка 369: Сразу отправляем AI
-        };
-
-        // Строка 370: Ошибка — timeout, no-speech, not-allowed и т.д.
-        recognition.onerror = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
-
-        // Строка 371: Запись закончилась (неважно успешно или нет)
-        recognition.onend = () => {
-            isListening = false; // Строка 372: Сбрасываем флаг
-            micBtn.classList.remove('listening'); // Строка 373: Останавливаем красное мигание
-            micBtn.textContent = "🎤 מיקרופון";   // Строка 374: Возвращаем исходный текст
-            if (voiceText.textContent === "מאזין...") voiceText.textContent = "[לא זוהה קול]";
-            // Строка 375: Если так и осталось "Слушаю..." — голос не распознан
-        };
+    if (!SpeechRec) { micBtn.textContent = "🎤 לא נתמך"; micBtn.disabled = true; }
+    else {
+        const recognition = new SpeechRec();
+        recognition.lang = 'he-IL'; recognition.continuous = false; recognition.interimResults = false;
+        let isListening = false;
+        micBtn.addEventListener('click', () => { if (isListening) { recognition.stop(); return; } voiceText.textContent = "מאזין..."; recognition.start(); });
+        recognition.onstart  = () => { isListening = true; micBtn.classList.add('listening'); micBtn.textContent = "⏹ עצור"; };
+        recognition.onresult = (e) => { const t = e.results[0][0].transcript; voiceText.textContent = "קלט קולי: " + t; userInput.value = t; askAI(t); };
+        recognition.onerror  = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
+        recognition.onend    = () => { isListening = false; micBtn.classList.remove('listening'); micBtn.textContent = "🎤 מיקרופון"; if (voiceText.textContent === "מאזין...") voiceText.textContent = "[לא זוהה קול]"; };
     }
 
-    // Строка 376: Синтез речи — браузер читает ответ AI вслух
     function speakText(text) {
-        if (!window.speechSynthesis) return; // Строка 377: Браузер не поддерживает TTS — выходим
-        window.speechSynthesis.cancel();      // Строка 378: Останавливаем предыдущее воспроизведение
-        const speech  = new SpeechSynthesisUtterance(text); // Строка 379: Объект с текстом для озвучки
-        speech.lang   = 'he-IL'; // Строка 380: Голос иврит
-        speech.pitch  = 0.7;     // Строка 381: Высота: 1.0=норма, 0.7=ниже нормы (жутковато)
-        speech.rate   = 0.9;     // Строка 382: Скорость: 1.0=норма, 0.9=чуть медленнее (зловеще)
-        window.speechSynthesis.speak(speech); // Строка 383: Запускаем воспроизведение
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = 'he-IL'; speech.pitch = 0.7; speech.rate = 0.9;
+        window.speechSynthesis.speak(speech);
     }
 
-    const clockEl = document.getElementById('clock'); // Строка 384: Span с часами
-
-    // Строка 385: Функция tick — форматирует текущее время на иврите (ЧЧ:ММ:СС)
+    const clockEl = document.getElementById('clock');
     const tick = () => { clockEl.textContent = new Date().toLocaleTimeString('he-IL'); };
-    tick(); // Строка 386: Первый вызов сразу — часы видны мгновенно, не через секунду
-    setInterval(tick, 1000); // Строка 387: Повторяем каждые 1000мс = 1 секунда
+    tick(); setInterval(tick, 1000);
 
 </script>
-<!-- Строка 388: Закрытие JS-блока -->
 </body>
-<!-- Строка 389: Закрытие body -->
 </html>
-<!-- Строка 390: Закрытие html -->
