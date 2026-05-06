@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Строка 1: Объявление типа документа — браузер понимает что это HTML5 -->
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -59,16 +58,8 @@
         #apiStatus { font-size: 0.8em; white-space: nowrap; }
         #apiStatus.ok  { color: #00ff41; }
         #apiStatus.err { color: #ff4444; }
-        #cameras-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .cam-block {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+        #cameras-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .cam-block { flex: 1; display: flex; flex-direction: column; }
         .cam-label {
             text-align: center;
             font-size: 0.75em;
@@ -77,8 +68,7 @@
             margin-bottom: 4px;
         }
         #camera {
-            width: 100%;
-            height: 200px;
+            width: 100%; height: 200px;
             object-fit: cover;
             border: 2px solid #00ff41;
             display: block;
@@ -86,8 +76,7 @@
             background: #050505;
         }
         #espCamImg {
-            width: 100%;
-            height: 200px;
+            width: 100%; height: 200px;
             object-fit: cover;
             border: 2px solid #00ff41;
             display: block;
@@ -95,8 +84,7 @@
             background: #050505;
         }
         #espPlaceholder {
-            width: 100%;
-            height: 200px;
+            width: 100%; height: 200px;
             border: 2px solid #004400;
             display: flex;
             align-items: center;
@@ -106,18 +94,8 @@
             font-size: 0.85em;
             letter-spacing: 2px;
         }
-        #cam-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            align-items: flex-end;
-        }
-        .cam-btn-group {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        #cam-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end; }
+        .cam-btn-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
         #aiAnswer {
             height: 180px;
             overflow-y: auto;
@@ -152,12 +130,7 @@
         }
         button:hover    { background: #00ff41; color: black; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #statusBar {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8em;
-            margin-bottom: 15px;
-        }
+        #statusBar { display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 15px; }
         #micBtn.listening {
             background: #440000;
             border-color: #ff0000;
@@ -202,14 +175,12 @@
             <div class="cam-label">[ CAM-01 / MAIN ENTRANCE ]</div>
             <video id="camera" autoplay muted playsinline></video>
         </div>
-
         <div class="cam-block">
             <div class="cam-label">
                 [ CAM-02 / ESP-CAM — LIVE ]
                 <span id="espDot" class="dot off"></span>
             </div>
             <div id="espPlaceholder">[ ממתין לחיבור... ]</div>
-            <!-- ← img עם src ריק. JS ישים כאן את ה-Cloudflare stream URL -->
             <img id="espCamImg" src="" alt="ESP-CAM" style="display:none;">
         </div>
     </div>
@@ -239,8 +210,9 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-    // ← הוספנו get לצד onValue — כדי לקרוא את ה-URL של Cloudflare מ-Firebase
-    import { getDatabase, ref, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    // ← הוספנו set כדי לכתוב ל-/tts
+    import { getDatabase, ref, push, onValue, get, set }
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const LS_KEY      = "fazbear_groq_key";
     const apiKeyInput = document.getElementById('apiKeyInput');
@@ -302,9 +274,6 @@
     let espListening   = false;
     let espUnsubscribe = null;
 
-    // ─── ESP-CAM ─────────────────────────────────────────────────
-    // שינוי מרכזי: במקום base64 מ-Firebase — קורא את ה-Cloudflare URL
-    // ומציג סטרים MJPEG ישיר דרך HTTPS (אין Mixed Content!)
     document.getElementById('espBtn').addEventListener('click', async () => {
         const espBtn      = document.getElementById('espBtn');
         const img         = document.getElementById('espCamImg');
@@ -312,19 +281,15 @@
         const dot         = document.getElementById('espDot');
 
         if (!espListening) {
-            espListening       = true;
-            espBtn.textContent = "כבה ESP-CAM";
+            espListening            = true;
+            espBtn.textContent      = "כבה ESP-CAM";
             placeholder.textContent = "[ טוען סטרים... ]";
 
-            // ← קורא את ה-Cloudflare stream URL מ-Firebase
-            // ESP-CAM כותב אותו ל-/camera/stream_url בכל הפעלה
             try {
-                const snap = await get(ref(db, "/camera/stream_url"));
+                const snap      = await get(ref(db, "/camera/stream_url"));
                 const streamUrl = snap.val();
 
                 if (!streamUrl) {
-                    // אין URL — fallback ל-base64 מ-Firebase
-                    console.warn("[CAM] אין stream_url — עובר ל-Firebase base64");
                     espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
                         const data = snapshot.val();
                         if (!data || !data.frame) return;
@@ -336,17 +301,13 @@
                     return;
                 }
 
-                // ← יש URL — מציג סטרים MJPEG ישיר (חלק ומהיר!)
-                console.log("[CAM] סטרים:", streamUrl);
                 img.src                   = streamUrl;
                 img.style.display         = "block";
                 placeholder.style.display = "none";
                 dot.classList.replace('off', 'on');
 
-                // אם הסטרים נכשל — fallback ל-Firebase base64
                 img.onerror = () => {
-                    console.warn("[CAM] סטרים נכשל — fallback ל-Firebase base64");
-                    img.onerror = null;
+                    img.onerror    = null;
                     espUnsubscribe = onValue(ref(db, 'camera'), (snapshot) => {
                         const data = snapshot.val();
                         if (!data || !data.frame) return;
@@ -356,15 +317,16 @@
                         dot.classList.replace('off', 'on');
                     });
                 };
-
             } catch(e) {
                 placeholder.textContent = "[ שגיאת Firebase: " + e.message + " ]";
             }
 
         } else {
-            // כיבוי
             if (espUnsubscribe) { espUnsubscribe(); espUnsubscribe = null; }
             espListening              = false;
+            const img         = document.getElementById('espCamImg');
+            const placeholder = document.getElementById('espPlaceholder');
+            const dot         = document.getElementById('espDot');
             img.src                   = "";
             img.style.display         = "none";
             placeholder.style.display = "flex";
@@ -377,7 +339,7 @@
     async function askAI(text) {
         if (!text.trim()) return;
         const key = getApiKey();
-        if (!key) { answerBox.textContent = "[ERROR]: הכנס Groq API Key בשדה למעלה ולחץ שמור"; return; }
+        if (!key) { answerBox.textContent = "[ERROR]: הכנס Groq API Key"; return; }
 
         sendBtn.disabled      = true;
         micBtn.disabled       = true;
@@ -387,7 +349,10 @@
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Authorization': `Bearer ${key}`
+                },
                 body: JSON.stringify({
                     model:      "llama-3.1-8b-instant",
                     max_tokens: 1000,
@@ -397,16 +362,36 @@
                     ]
                 })
             });
+
             const data = await response.json();
+
             if (!response.ok) {
-                if (response.status === 401) { apiStatus.textContent = "[ ✗ מפתח לא תקין ]"; apiStatus.className = "err"; localStorage.removeItem(LS_KEY); }
+                if (response.status === 401) {
+                    apiStatus.textContent = "[ ✗ מפתח לא תקין ]";
+                    apiStatus.className   = "err";
+                    localStorage.removeItem(LS_KEY);
+                }
                 answerBox.textContent = `[ERROR ${response.status}]: ${data?.error?.message || "שגיאה"}`;
                 return;
             }
+
             const reply = data.choices[0].message.content;
             answerBox.textContent = reply;
             speakText(reply);
-            await push(ref(db, 'security_logs'), { timestamp: Date.now(), prompt: text, response: reply });
+
+            // ← כותב תשובת AI ל-Firebase — ESP32 קורא ומשמיע
+            await set(ref(db, '/tts'), {
+                text:      reply,
+                timestamp: Date.now(),
+                lang:      "he-IL"
+            });
+
+            await push(ref(db, 'security_logs'), {
+                timestamp: Date.now(),
+                prompt:    text,
+                response:  reply
+            });
+
         } catch (err) {
             answerBox.textContent = `[NETWORK ERROR]: ${err.message}`;
         } finally {
@@ -416,8 +401,17 @@
         }
     }
 
-    sendBtn.addEventListener('click', () => { const t = userInput.value.trim(); if (t) { askAI(t); userInput.value = ""; } });
-    userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const t = userInput.value.trim(); if (t) { askAI(t); userInput.value = ""; } } });
+    sendBtn.addEventListener('click', () => {
+        const t = userInput.value.trim();
+        if (t) { askAI(t); userInput.value = ""; }
+    });
+
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const t = userInput.value.trim();
+            if (t) { askAI(t); userInput.value = ""; }
+        }
+    });
 
     let camStream = null;
     document.getElementById('camBtn').addEventListener('click', async () => {
@@ -425,14 +419,15 @@
         const camBtn = document.getElementById('camBtn');
         if (!camStream) {
             try {
-                camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                camStream     = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                 cam.srcObject = camStream;
                 await cam.play();
                 camBtn.textContent = 'כבה מצלמה';
             } catch (err) { alert("שגיאת מצלמה: " + err.message); }
         } else {
             camStream.getTracks().forEach(t => t.stop());
-            cam.srcObject = null; camStream = null;
+            cam.srcObject      = null;
+            camStream          = null;
             camBtn.textContent = 'הפעל מצלמה';
         }
     });
@@ -440,27 +435,48 @@
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) { micBtn.textContent = "🎤 לא נתמך"; micBtn.disabled = true; }
     else {
-        const recognition = new SpeechRec();
-        recognition.lang = 'he-IL'; recognition.continuous = false; recognition.interimResults = false;
+        const recognition          = new SpeechRec();
+        recognition.lang           = 'he-IL';
+        recognition.continuous     = false;
+        recognition.interimResults = false;
         let isListening = false;
-        micBtn.addEventListener('click', () => { if (isListening) { recognition.stop(); return; } voiceText.textContent = "מאזין..."; recognition.start(); });
+
+        micBtn.addEventListener('click', () => {
+            if (isListening) { recognition.stop(); return; }
+            voiceText.textContent = "מאזין...";
+            recognition.start();
+        });
+
         recognition.onstart  = () => { isListening = true; micBtn.classList.add('listening'); micBtn.textContent = "⏹ עצור"; };
-        recognition.onresult = (e) => { const t = e.results[0][0].transcript; voiceText.textContent = "קלט קולי: " + t; userInput.value = t; askAI(t); };
-        recognition.onerror  = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
-        recognition.onend    = () => { isListening = false; micBtn.classList.remove('listening'); micBtn.textContent = "🎤 מיקרופון"; if (voiceText.textContent === "מאזין...") voiceText.textContent = "[לא זוהה קול]"; };
+        recognition.onresult = (e) => {
+            const t = e.results[0][0].transcript;
+            voiceText.textContent = "קלט קולי: " + t;
+            userInput.value = t;
+            askAI(t);
+        };
+        recognition.onerror = (e) => { voiceText.textContent = `[MIC ERROR]: ${e.error}`; };
+        recognition.onend   = () => {
+            isListening = false;
+            micBtn.classList.remove('listening');
+            micBtn.textContent = "🎤 מיקרופון";
+            if (voiceText.textContent === "מאזין...") voiceText.textContent = "[לא זוהה קול]";
+        };
     }
 
     function speakText(text) {
         if (!window.speechSynthesis) return;
         window.speechSynthesis.cancel();
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.lang = 'he-IL'; speech.pitch = 0.7; speech.rate = 0.9;
+        const speech  = new SpeechSynthesisUtterance(text);
+        speech.lang   = 'he-IL';
+        speech.pitch  = 0.7;
+        speech.rate   = 0.9;
         window.speechSynthesis.speak(speech);
     }
 
     const clockEl = document.getElementById('clock');
     const tick = () => { clockEl.textContent = new Date().toLocaleTimeString('he-IL'); };
-    tick(); setInterval(tick, 1000);
+    tick();
+    setInterval(tick, 1000);
 
 </script>
 </body>
